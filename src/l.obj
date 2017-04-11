@@ -1,0 +1,51 @@
+material
+diffuse 0.8 0.8 0.8
+reflective 0 0 0
+emitted 1 1 1
+
+material
+diffuse 0.8 0.8 0.8
+reflective 0 0 0
+emitted 0 0 0
+
+v 1 0 0
+v 0 0 1
+v 0 1 1
+v 1 1 0
+v -1 1 0
+v -1 0 0
+v 0 1 0
+v 0 0 0
+v 0 1 -1
+v 0 0 -1
+v 1 1 -1
+v 1 0 -1
+v 1 1 1
+v 1 0 1
+v -1 1 1
+v -1 0 1
+
+m 0
+f 5 15 16 6
+
+m 1
+f 9 7 8 10
+f 8 2 14 1
+f 4 11 12 1
+f 1 14 13 4
+f 1 12 10 8
+f 8 6 16 2
+f 2 16 15 3
+f 3 13 14 2
+f 3 15 5 7
+f 7 4 13 3
+f 7 9 11 4
+f 7 5 6 8
+f 11 9 10 12
+
+PerspectiveCamera {
+  camera_position    <0,0.5,5>
+  point_of_interest  <0,0.5,0>
+  up                 <0,1,0>
+  angle              16
+}

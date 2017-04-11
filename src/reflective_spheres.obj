@@ -1,0 +1,50 @@
+material
+diffuse 0 0 0
+reflective 0 0 0
+emitted 70 70 70
+
+material
+diffuse 0.7 0.7 0.7
+reflective 0 0 0
+emitted 0 0 0
+
+material 
+diffuse 0.1 0.1 0.1
+reflective 0.8 0.8 0.8
+emitted 0 0 0
+
+material 
+diffuse 0.1 0.1 0.1
+reflective 0.8 0 0
+emitted 0 0 0
+
+m 0
+v -7 10 7
+v -7 10 3
+v -3 10 3
+v -3 10 7
+f 1 2 3 4
+
+m 1
+v -10 -1 -10
+v -10 -1 10
+v 10 -1 10
+v 10 -1 -10
+f 5 6 7 8
+
+m 2
+s 0.3 0 -1 1
+
+m 3
+s -0.5 -0.6 0.2 0.4
+
+background_color 0.2 0.1 0.6
+
+PerspectiveCamera {
+  camera_position    < 5.3406, 2.02057, 5.92681 >
+  point_of_interest  < 1.3208, 0.388196, 0.955876 >
+  up                 < 0, 1, 0 >
+  angle              20
+}
+
+
