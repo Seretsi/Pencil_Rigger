@@ -277,7 +277,7 @@ void Mesh::Load(ArgParser *_args) {
     float max_dim = bbox->maxDim();
     glm::vec3 camera_position = point_of_interest + glm::vec3(0,0,4*max_dim);
     glm::vec3 up = glm::vec3(0,1,0);
-    camera = new PerspectiveCamera(camera_position, point_of_interest, up, 20 * M_PI/180.0);    
+    camera = new PerspectiveCamera(camera_position, point_of_interest, up, 20 * 3.14159265359 /180.0);
   }
 }
 
