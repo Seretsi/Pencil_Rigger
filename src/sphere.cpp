@@ -37,8 +37,8 @@ bool Sphere::intersect(const Ray &r, Hit &h) const {
 
 // helper function to place a grid of points on the sphere
 glm::vec3 ComputeSpherePoint(float s, float t, const glm::vec3 center, float radius) {
-  float angle = 2*M_PI*s;
-  float y = -cos(M_PI*t);
+  float angle = 2* 3.14159265359*s;
+  float y = -cos(3.14159265359*t);
   float factor = sqrt(1-y*y);
   float x = factor*cos(angle);
   float z = factor*-sin(angle);

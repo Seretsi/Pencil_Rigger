@@ -1,9 +1,12 @@
+#define NOMINMAX
+
 #include <cstdlib>
 #include "glCanvas.h"
 #include "argparser.h"
 #include "camera.h"
-
-#include <unistd.h>
+#include <Windows.h>
+#include <algorithm>
+//#include <unistd.h>
 
 #include "mesh.h"
 #include "radiosity.h"
@@ -57,6 +60,19 @@ GLuint GLCanvas::colormodeID;
 
 GLuint GLCanvas::textureID;
 GLint GLCanvas::mytexture;
+
+void usleep(__int64 usec)
+{
+	HANDLE timer;
+	LARGE_INTEGER ft;
+
+	ft.QuadPart = -(10 * usec); // Convert to 100 nanosecond interval, negative value indicates relative time
+
+	timer = CreateWaitableTimer(NULL, TRUE, NULL);
+	SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0);
+	WaitForSingleObject(timer, INFINITE);
+	CloseHandle(timer);
+}
 
 // ========================================================
 // Initialize all appropriate OpenGL variables, set

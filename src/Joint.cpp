@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <glm/glm.hpp>
 #include <map>
 #include <vector>
@@ -5,5 +6,4 @@
 
 void JointTree::clearJoints() {
 	//use omp to enter jointtree and delete tree from root
-
 }
