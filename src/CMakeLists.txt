@@ -49,6 +49,8 @@ add_executable(${my_executable}
   utils.h
   utils.cpp
   vertex.h
+  joint.h
+  Joint.cpp
 )
 
 # http://glm.g-truc.net/0.9.5/updates.html

@@ -152,7 +152,7 @@ Ray OrthographicCamera::generateRay(double x, double y) {
 
 Ray PerspectiveCamera::generateRay(double x, double y) {
   glm::vec3 screenCenter = camera_position + getDirection();
-  float radians_angle = angle * M_PI / 180.0f;
+  float radians_angle = angle * 3.14159265359 / 180.0f;
   float screenHeight = 2 * tan(radians_angle/2.0);
   float aspect = std::max(height/float(width),width/float(height));
   screenHeight *= aspect;

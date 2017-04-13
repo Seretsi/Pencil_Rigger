@@ -95,7 +95,7 @@ glm::vec3 RayTracer::TraceRay(Ray &ray, Hit &hit, int bounce_count) const {
     // ===========================================
 
     float distToLightCentroid = glm::length(lightCentroid-point);
-    myLightColor = lightColor / float(M_PI*distToLightCentroid*distToLightCentroid);
+    myLightColor = lightColor / float(3.14159265359*distToLightCentroid*distToLightCentroid);
 
 
 

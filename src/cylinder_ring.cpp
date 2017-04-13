@@ -115,7 +115,7 @@ bool CylinderRing::intersect(const Ray &r, Hit &h) const {
 
 // helper function to place a grid of points on the cylinderRing
 glm::vec3 ComputeCylinderRingPoint(float s, const glm::vec3 center, float radius, float height) {
-  float angle = 2*M_PI*s;
+  float angle = 2* 3.14159265359*s;
   float x = radius*cos(angle);
   float z = radius*-sin(angle);
   glm::vec3 answer = center + glm::vec3(x,height,z);
