@@ -34,6 +34,23 @@ public:
 private:
 	RayTracer* rt;
 	JointTree* jt;
+
+public:
+
+	bool render_to_a;
+
+	std::vector<VBOPosNormalColor> joint_pixel;
+	//std::vector<VBOPosNormalColor> pixels_b;
+	std::vector<VBOIndexedTri> joints_pixel_indices;
+	//std::vector<VBOIndexedTri> pixels_indices_b;
+
+
+private:
+
+	GLuint joints_pixels_a_VBO;
+	//GLuint pixels_b_VBO;
+	GLuint joints_pixels_indices_a_VBO;
+	//GLuint pixels_indices_b_VBO;
 };
 
 #endif // !_RIGGER_H
