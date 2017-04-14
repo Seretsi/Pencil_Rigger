@@ -4,9 +4,12 @@
 #include "glCanvas.h"
 #include "argparser.h"
 #include "camera.h"
+#ifdef OS_WINDOWS
 #include <Windows.h>
+#else
+#include <unistd.h>
+#endif
 #include <algorithm>
-//#include <unistd.h>
 
 #include "mesh.h"
 #include "radiosity.h"
@@ -61,6 +64,7 @@ GLuint GLCanvas::colormodeID;
 GLuint GLCanvas::textureID;
 GLint GLCanvas::mytexture;
 
+#ifdef OS_WINDOWS
 void usleep(__int64 usec)
 {
 	HANDLE timer;
@@ -73,6 +77,7 @@ void usleep(__int64 usec)
 	WaitForSingleObject(timer, INFINITE);
 	CloseHandle(timer);
 }
+#endif
 
 // ========================================================
 // Initialize all appropriate OpenGL variables, set
@@ -190,6 +195,7 @@ void GLCanvas::animate(){
   }
 
   usleep (1000);
+
 }
 
 
@@ -498,16 +504,6 @@ glm::vec3 GLCanvas::TraceRay(double i, double j) {
   // compute and set the pixel color
   int max_d = std::max(args->width,args->height);
   glm::vec3 color;
-  
-
-
-
-  // ==================================
-  // ASSIGNMENT: IMPLEMENT ANTIALIASING
-  // ==================================
-  
-
-
   // Here's what we do with a single sample per pixel:
   // construct & trace a ray through the center of the pixle
   double x = (i-args->width/2.0)/double(max_d)+0.5;
@@ -516,7 +512,7 @@ glm::vec3 GLCanvas::TraceRay(double i, double j) {
   Hit hit;
   color = raytracer->TraceRay(r,hit,args->num_bounces);
   // add that ray for visualization
-  RayTree::AddMainSegment(r,0,hit.getT());
+  RayTree::AddMainSegment(r,0,hit.getT(hit.num_hits()-1));
 
 
 

@@ -1,0 +1,29 @@
+<num joints>
+<joint locations> <index>
+			.
+			.
+			.
+<level 0 node> <level 1 nodes>
+<level 1 node> <level 2 nodes>
+<level 1 node> <level 2 nodes>
+			.
+			.
+			.
+<level n-1 node> <level n node>
+
+
+<sample>
+7
+0 0 0  0	
+1 1 1  1
+2 2 2  2
+3 3 3  3 
+4 4 4  4
+5 5 5  5
+6 6 6  6
+
+
+4 2 3
+2 1 5
+3 6 0
+

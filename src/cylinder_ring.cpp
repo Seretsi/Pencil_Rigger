@@ -91,19 +91,19 @@ bool CylinderRing::intersect(const Ray &r, Hit &h) const {
   bool answer = false;
 
   // return the closest intersection
-  if (outer && (outer_t < h.getT())) {
+  if (outer && (outer_t < h.getT(h.num_hits()-1))) {
     h.set(outer_t,this->getMaterial(),outer_normal);
     answer = true;
   }
-  if (inner && (inner_t < h.getT())) {
+  if (inner && (inner_t < h.getT(h.num_hits()-1))) {
     h.set(inner_t,this->getMaterial(),-inner_normal);
     answer = true;
   }
-  if (top && (top_t < h.getT())) {
+  if (top && (top_t < h.getT(h.num_hits()-1))) {
     h.set(top_t,this->getMaterial(),top_normal);
     answer = true;
   }
-  if (bottom && (bottom_t < h.getT())) {
+  if (bottom && (bottom_t < h.getT(h.num_hits()-1))) {
     h.set(bottom_t,this->getMaterial(),-bottom_normal);
     answer = true;
   }

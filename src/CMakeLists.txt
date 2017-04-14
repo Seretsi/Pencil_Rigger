@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.8)
 project (hw3)
 
-set(my_executable render)
+set(my_executable rigger)
 
 # toggle for building a 32 bit version (for Dr. Memory)
 set(BUILD_32 "")
