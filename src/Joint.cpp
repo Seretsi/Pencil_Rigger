@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include <glm/glm.hpp>
 #include <map>
 #include <vector>

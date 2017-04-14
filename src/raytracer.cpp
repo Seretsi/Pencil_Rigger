@@ -63,7 +63,7 @@ glm::vec3 RayTracer::TraceRay(Ray &ray, Hit &hit, int bounce_count) const {
  
   
   glm::vec3 normal = hit.getNormal();
-  glm::vec3 point = ray.pointAtParameter(hit.getT());
+  glm::vec3 point = ray.pointAtParameter(hit.getT(hit.num_hits()-1));
   glm::vec3 answer;
 
   // ----------------------------------------------

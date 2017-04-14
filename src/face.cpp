@@ -87,7 +87,7 @@ bool Face::triangle_intersect(const Ray &r, Hit &h, Vertex *a, Vertex *b, Vertex
     float t_s = alpha * a->get_s() + beta * b->get_s() + gamma * c->get_s();
     float t_t = alpha * a->get_t() + beta * b->get_t() + gamma * c->get_t();
     h.setTextureCoords(t_s,t_t);
-    assert (h.getT() >= EPSILON);
+    assert (h.getT(h.num_hits()-1) >= EPSILON);
     return 1;
   }
 
@@ -119,9 +119,9 @@ bool Face::plane_intersect(const Ray &r, Hit &h, bool intersect_backfacing) cons
     return 0; // hit the backside
 
   float t = numer / denom;
-  if (t > EPSILON && t < h.getT()) {
+  if (t > EPSILON && t < h.getT(h.num_hits()-1)) {
     h.set(t,this->getMaterial(),normal);
-    assert (h.getT() >= EPSILON);
+    assert (h.getT(h.num_hits()-1) >= EPSILON);
     return 1;
   }
   return 0;
