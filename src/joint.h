@@ -8,14 +8,8 @@
 class Joint {
 public:
 	//Constructor
-	Joint(glm::vec3 &position) : pos(position){
-		if (count == NULL) {
-			count = 1;
-		}
-		else {
-			count++;
-		}
-		setID(count);
+	Joint(int id, glm::vec3 &position) : pos(position){
+		setID(id);
 	}
 
 	//Destructor
@@ -24,39 +18,41 @@ public:
 	//Accessors
 	glm::vec3 getPos() { return pos; }
 	int getID() { return id; }
-	Joint* getChild(int num) { return child[num]; }
+	int getChild(int num) { return child[num]; }
 	int numChildren() { return child.size(); }
 	
 	//Modifiers
-	void setParent(Joint* j) { parent = j; }
-	void addChild(Joint* j) { child.push_back(j); }
+	void setParent(int &j) { parent = j; }
+	void addChild(int &j) { child.push_back(j); }
 	void setPosition(glm::vec3 &position) { pos = position; }
 	void setID(int &num) { id = num; }
 
 private:
 
 	//representation
-  	static int count;
 	int id;
 	glm::vec3 pos;
-	Joint* parent;
-	std::vector<Joint*> child;
+	int parent;
+	std::vector<int> child;
 	bool selected;
 
 };
 
 class JointTree {
 public:
-	Joint* getJoint(int id) { return jointsmap[id]; }
-
+	Joint& getJoint(int id) { return joints[id]; }
+	
 	void addJoint(Joint &j) {
-		assert(jointsmap.find(j.getID()) == jointsmap.end());
-
+		joints.push_back(j);
 	}
+	int size() {
+		return joints.size();
+	}
+
 	//helpers
 	void clearJoints();
 
 private:
-	std::map<int, Joint*> jointsmap;
+	std::vector<Joint> joints;
 };
 #endif 
