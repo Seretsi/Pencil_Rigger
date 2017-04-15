@@ -32,12 +32,11 @@ public:
 	void setupVBOs();
 	void drawVBOs();
 	void cleanupVBOs();
+	void drawVBOs_joints();
 
 private:
 	RayTracer* rt;
 	JointTree* jt;
-
-public:
 
 	bool render_to_a;
 
@@ -45,11 +44,6 @@ public:
 	//std::vector<VBOPosNormalColor> pixels_b;
 	std::vector<VBOIndexedTri> joints_pixel_indices;
 	//std::vector<VBOIndexedTri> pixels_indices_b;
-
-
-private:
-
-	void drawVBOs_joints();
 
 	GLuint joints_pixels_VBO;
 	//GLuint pixels_b_VBO;
