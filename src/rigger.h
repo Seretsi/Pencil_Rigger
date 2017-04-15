@@ -9,6 +9,7 @@
 #include <omp.h>
 #include "glCanvas.h"
 
+
 class ArgParser;
 class RayTracer;
 class Hit;
@@ -26,30 +27,28 @@ public:
 	void setRaytracer(RayTracer *raytracer) { rt = raytracer; }
 	void setJointTree(JointTree *jointtree) { jt = jointtree; }
 
-	
+	void initializeVBOs();
+	void resetVBOs();
+	void setupVBOs();
+	void drawVBOs();
+	void cleanupVBOs();
+	void drawVBOs_joints();
 
 private:
 	RayTracer* rt;
 	JointTree* jt;
 
-public:
 	bool render_to_a;
+
 	std::vector<VBOPosNormalColor> joints_pixel;
 	//std::vector<VBOPosNormalColor> pixels_b;
 	std::vector<VBOIndexedTri> joints_pixel_indices;
 	//std::vector<VBOIndexedTri> pixels_indices_b;
-private: 
-	void initializeVBOs();
-	void resetVBOs();
-	void setupJoints();
-	void drawVBOs();
-	void cleanupVBOs(); 
-	void drawVBOs_joints();
-	
+
 	GLuint joints_pixels_VBO;
 	//GLuint pixels_b_VBO;
 	GLuint joints_pixels_indices_VBO;
 	//GLuint pixels_indices_b_VBO;
-
 };
+
 #endif // !_RIGGER_H
