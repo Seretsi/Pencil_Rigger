@@ -51,6 +51,8 @@ add_executable(${my_executable}
   vertex.h
   joint.h
   Joint.cpp
+  rigger.h
+  rigger.cpp
 )
 
 # http://glm.g-truc.net/0.9.5/updates.html

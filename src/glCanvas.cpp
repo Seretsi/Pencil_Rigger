@@ -4,7 +4,7 @@
 #include "glCanvas.h"
 #include "argparser.h"
 #include "camera.h"
-#ifdef OS_WINDOWS
+#if defined(_WIN32)
 #include <Windows.h>
 #else
 #include <unistd.h>
@@ -64,7 +64,7 @@ GLuint GLCanvas::colormodeID;
 GLuint GLCanvas::textureID;
 GLint GLCanvas::mytexture;
 
-#ifdef OS_WINDOWS
+#if defined(_WIN32)
 void usleep(__int64 usec)
 {
 	HANDLE timer;
