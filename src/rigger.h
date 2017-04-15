@@ -7,10 +7,7 @@
 #include "vbo_structs.h"
 #include "argparser.h"
 #include <omp.h>
-<<<<<<< HEAD
-=======
 #include "glCanvas.h"
->>>>>>> refs/remotes/origin/master
 
 class ArgParser;
 class RayTracer;
@@ -29,40 +26,30 @@ public:
 	void setRaytracer(RayTracer *raytracer) { rt = raytracer; }
 	void setJointTree(JointTree *jointtree) { jt = jointtree; }
 
-	void initializeVBOs();
-	void resetVBOs();
-	void setupVBOs();
-	void drawVBOs();
-	void cleanupVBOs();
+	
 
 private:
 	RayTracer* rt;
 	JointTree* jt;
 
 public:
-
 	bool render_to_a;
-
 	std::vector<VBOPosNormalColor> joints_pixel;
 	//std::vector<VBOPosNormalColor> pixels_b;
 	std::vector<VBOIndexedTri> joints_pixel_indices;
 	//std::vector<VBOIndexedTri> pixels_indices_b;
-
-
-private:
-<<<<<<< HEAD
-
-	GLuint joints_pixels_a_VBO;
-	//GLuint pixels_b_VBO;
-	GLuint joints_pixels_indices_a_VBO;
-=======
+private: 
+	void initializeVBOs();
+	void resetVBOs();
+	void setupJoints();
+	void drawVBOs();
+	void cleanupVBOs(); 
 	void drawVBOs_joints();
-
+	
 	GLuint joints_pixels_VBO;
 	//GLuint pixels_b_VBO;
 	GLuint joints_pixels_indices_VBO;
->>>>>>> refs/remotes/origin/master
 	//GLuint pixels_indices_b_VBO;
-};
 
+};
 #endif // !_RIGGER_H
