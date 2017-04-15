@@ -7,10 +7,8 @@
 #include "vbo_structs.h"
 #include "argparser.h"
 #include <omp.h>
-<<<<<<< HEAD
 #include "glCanvas.h"
-=======
->>>>>>> refs/remotes/origin/dev_br
+
 
 class ArgParser;
 class RayTracer;
@@ -51,17 +49,29 @@ public:
 
 private:
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+	GLuint joints_pixels_a_VBO;
+	//GLuint pixels_b_VBO;
+	GLuint joints_pixels_indices_a_VBO;
+=======
+>>>>>>> origin/master
 	void drawVBOs_joints();
 
 	GLuint joints_pixels_VBO;
 	//GLuint pixels_b_VBO;
 	GLuint joints_pixels_indices_VBO;
+<<<<<<< HEAD
 =======
 
 	GLuint joints_pixels_a_VBO;
 	//GLuint pixels_b_VBO;
 	GLuint joints_pixels_indices_a_VBO;
 >>>>>>> refs/remotes/origin/dev_br
+=======
+>>>>>>> refs/remotes/origin/master
+>>>>>>> origin/master
 	//GLuint pixels_indices_b_VBO;
 };
 
