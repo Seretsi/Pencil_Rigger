@@ -18,9 +18,11 @@ class JointTree;
 class Rigger {
 public:	
 	//constructor
-	Rigger(RayTracer *raytracer, JointTree *jointtree) { 
+	Rigger () {}
+	Rigger(RayTracer *raytracer, JointTree *jointtree, ArgParser *arg) { 
 		rt = raytracer; 
 		jt = jointtree;
+		args = arg;
 	}
 
 	// set access to the other modules for hybrid rendering options
@@ -29,7 +31,7 @@ public:
 
 	void initializeVBOs();
 	void resetVBOs();
-	void setupVBOs();
+	void setupJoints();
 	void drawVBOs();
 	void cleanupVBOs();
 	void drawVBOs_joints();
@@ -37,6 +39,7 @@ public:
 private:
 	RayTracer* rt;
 	JointTree* jt;
+	ArgParser* args;
 
 	bool render_to_a;
 

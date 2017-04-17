@@ -19,6 +19,7 @@ class Mesh;
 class RayTracer;
 class Radiosity;
 class PhotonMapping;
+class Rigger;
 class Camera;
 
 // ====================================================================
@@ -36,6 +37,7 @@ public:
   static RayTracer *raytracer;
   static Radiosity *radiosity;
   static PhotonMapping *photon_mapping;
+  static Rigger *rigger;
 
   static BoundingBox bbox;
   static Camera* camera;

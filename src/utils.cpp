@@ -73,3 +73,14 @@ void addEdgeGeometry(std::vector<VBOPosNormalColor> &verts,
   tri_indices.push_back(VBOIndexedTri(start,start+1,start+2));
   tri_indices.push_back(VBOIndexedTri(start,start+2,start+3));
 }
+
+// calculate the normal of a triangle
+glm::vec3 computeNormal(const glm::vec3 &p1, const glm::vec3 &p2, const glm::vec3 &p3) {
+	glm::vec3 v12 = p2;
+	v12 -= p1;
+	glm::vec3 v23 = p3;
+	v23 -= p2;
+	glm::vec3 normal = glm::cross(v12, v23);
+	normal = glm::normalize(normal);
+	return normal;
+}
