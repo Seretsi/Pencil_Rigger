@@ -234,8 +234,8 @@ void GLCanvas::setupVBOs(){
   bbox.setupVBOs();
   radiosity->setupVBOs();
   photon_mapping->setupVBOs();
-  std::cout << "setting up Joints in GlCanvas\n";
   rigger->setupJoints();
+  rigger->setupBones();
   HandleGLError("leaving GLCanvas::setupVBOs()");
 }
 
@@ -261,7 +261,9 @@ void GLCanvas::drawVBOs(const glm::mat4 &ProjectionMatrix,const glm::mat4 &ViewM
   radiosity->drawVBOs();
   photon_mapping->drawVBOs();
   RayTree::drawVBOs();
+  //rigger->drawVBOs();
   rigger->drawVBOs_joints();
+  rigger->drawVBOs_bones();
   if (args->intersect_backfacing) {
     glDisable(GL_CULL_FACE);
   }

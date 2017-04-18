@@ -22,6 +22,7 @@ public:
 	//Accessors
 	glm::vec3 getPos() { return pos; }
 	int getID() { return id; }
+	int getParent() { return parent; }
 	int getChild(int num) { return child[num]; }
 	int numChildren() { return child.size(); }
 	bool isSelected() { return selected; }
