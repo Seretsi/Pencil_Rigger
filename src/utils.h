@@ -113,5 +113,6 @@ void addEdgeGeometry(std::vector<VBOPosNormalColor> &verts,
                      const glm::vec4 &acolor, const glm::vec4 &bcolor, 
                      float a_th,float b_th);
 
-
+// calculate the normal of a triangle
+glm::vec3 computeNormal(const glm::vec3 &p1, const glm::vec3 &p2, const glm::vec3 &p3);
 #endif

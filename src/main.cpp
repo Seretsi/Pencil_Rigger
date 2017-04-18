@@ -16,6 +16,7 @@
 #include "argparser.h"
 #include "glCanvas.h"
 #include "camera.h"
+#include "rigger.h"
 
 #include <time.h>
 
@@ -32,6 +33,7 @@ int main(int argc, char *argv[]) {
   glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS); 
+  
 
   while (!glfwWindowShouldClose(GLCanvas::window))  {
     
