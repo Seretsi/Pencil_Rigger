@@ -28,17 +28,17 @@ void Rigger::resetVBOs() {
 }
 
 void Rigger::setupJoints() {
-	float offset = 0.1;
+	float offset = 0.05f; //controls the size of rendered joint nodes
 	glm::vec4 selected_color = glm::vec4(1.0, 1.0, 0.0, 1.0);
 	glm::vec4 unselected_color = glm::vec4(1.0, 0.0, 0.0, 1.0);
 
 	for (int i = 0; i < 100; i++) {
-		glm::vec3 pos = glm::vec3(args->rand(), args->rand(), args->rand());
+		glm::vec3 pos = glm::vec3(args->rand()*4 - 2, args->rand()*4 - 2, args->rand()*4 - 2);
 		Joint* j = new Joint(jt->size(), pos);
 		jt->addJoint(*j);
 
 	}
-
+	std::cout << jt->size() << std::endl;
 	//run through "tree" and get positions to make cubes to represent joints3
 #pragma omp parallel for
 	for (int j = 0; j < jt->size(); ++j) {
@@ -66,7 +66,7 @@ void Rigger::setupJoints() {
 
 		//color based on selection
 		glm::vec4 color;
-		joint_node.isSelected() ? color = selected_color : color = unselected_color;
+		joint_node.isSelected() ? color = unselected_color : color = selected_color;
 
 		//FF - Front Face
 		int start;
@@ -133,17 +133,22 @@ void Rigger::setupJoints() {
 		&joints_pixel_indices[0], GL_STATIC_DRAW);
 }
 void Rigger::drawVBOs() {
-	
+	glDisable(GL_CULL_FACE);;
+
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK );
 	// turn off depth buffer
 	glDisable(GL_DEPTH_TEST);
 
 	void drawVBOs_joints();
 
+	glDisable(GL_CULL_FACE);;
 	glEnable(GL_DEPTH_TEST);
 }
 
 void Rigger::drawVBOs_joints() {
 	if (joints_pixel.size() == 0) return;
+	HandleGLError("enter draw joints");
 	glBindBuffer(GL_ARRAY_BUFFER, joints_pixels_VBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, joints_pixels_indices_VBO);
 	glEnableVertexAttribArray(0);
@@ -161,6 +166,7 @@ void Rigger::drawVBOs_joints() {
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
 	glDisableVertexAttribArray(3);
+	HandleGLError("exit draw joints");
 }
 
 

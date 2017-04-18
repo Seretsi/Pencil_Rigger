@@ -234,6 +234,7 @@ void GLCanvas::setupVBOs(){
   bbox.setupVBOs();
   radiosity->setupVBOs();
   photon_mapping->setupVBOs();
+  std::cout << "setting up Joints in GlCanvas\n";
   rigger->setupJoints();
   HandleGLError("leaving GLCanvas::setupVBOs()");
 }
