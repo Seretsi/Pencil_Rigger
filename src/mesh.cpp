@@ -5,6 +5,8 @@
 #include <assert.h>
 #include <string>
 #include <utility>
+#include <iterator>
+
 
 #include "argparser.h"
 #include "vertex.h"
@@ -168,6 +170,7 @@ void Mesh::setParentsChild(Vertex *p1, Vertex *p2, Vertex *child) {
 // the load function parses our (non-standard) extension of very simple .obj files
 // ===============================================================================
 
+
 void Mesh::Load(ArgParser *_args) {
   args = _args;
 
@@ -183,6 +186,7 @@ void Mesh::Load(ArgParser *_args) {
   Material *active_material = NULL;
   camera = NULL;
   background_color = glm::vec3(1,1,1);
+
  
   while (objfile >> token) {
     if (token == "v") {

@@ -71,8 +71,19 @@ void Rigger::drawVBOs_joints() {
 	glDisableVertexAttribArray(3);
 }
 
-
 void Rigger::cleanupVBOs() {
 	glDeleteBuffers(1, &joints_pixels_VBO);
 	//glDeleteBuffers(1, &pixels_b_VBO);
 }
+
+
+
+
+
+
+
+
+
+
+
+
