@@ -8,6 +8,11 @@ void JointTree::clearJoints() {
 	//use omp to enter jointtree and delete tree from root
 }
 
+Joint& JointTree::getClosest(int i) {
+	return joints[i];
+	//return NULL;
+}
+
 bool JointTree::Parallel_load(std::string filename, ArgParser* args) {
 	std::ifstream rigfile(args->path+'/'+filename);
 	if (!rigfile.good()) {
@@ -64,7 +69,7 @@ bool JointTree::Parallel_load(std::string filename, ArgParser* args) {
 		ss >> t;
 		parent = atoi(t.c_str());
 		while (ss >> t) {
-			joints[parent].child.push_back(atoi(t.c_str()));
+			joints[parent].addChild(atoi(t.c_str()));
 		}
 	}
 	return true;

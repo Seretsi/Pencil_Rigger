@@ -29,6 +29,8 @@ public:
 	void setRaytracer(RayTracer *raytracer) { rt = raytracer; }
 	void setJointTree(JointTree *jointtree) { jt = jointtree; }
 
+	JointTree* getJointTree() {return jt;}
+
 	void initializeVBOs();
 	void resetVBOs();
 	void setupJoints();
