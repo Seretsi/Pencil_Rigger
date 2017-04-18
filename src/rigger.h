@@ -6,7 +6,7 @@
 #include "hit.h"
 #include "vbo_structs.h"
 #include "argparser.h"
-#include <omp.h>
+//#include <omp.h>
 #include "glCanvas.h"
 
 

@@ -6,7 +6,7 @@
 #include <vector>
 #include <sstream>
 #include "argparser.h"
-#include <omp.h>
+//#include <omp.h>
 
 class Joint {
 public:
@@ -14,6 +14,7 @@ public:
 	Joint() {}
 	Joint(int _id, glm::vec3 position) : pos(position), id(_id){
 		parent = -1;
+		child = std::vector<int>();
 	}
 
 	//Destructor

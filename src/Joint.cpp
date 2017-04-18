@@ -60,9 +60,12 @@ bool JointTree::Parallel_load(std::string filename, ArgParser* args) {
 	while (getline(rigfile, token)) {
 		std::stringstream ss(token);
 		std::string t;
+		int parent;
+		ss >> t;
+		parent = atoi(t.c_str());
 		while (ss >> t) {
-
+			joints[parent].child.push_back(atoi(t.c_str()));
 		}
 	}
-
+	return true;
 }
