@@ -16,6 +16,8 @@
 #include "photon_mapping.h"
 #include "raytracer.h"
 #include "raytree.h"
+#include "rigger.h"
+#include "joint.h"
 
 #include "utils.h"
 
@@ -29,6 +31,7 @@ Mesh* GLCanvas::mesh = NULL;
 RayTracer* GLCanvas::raytracer = NULL;
 Radiosity* GLCanvas::radiosity = NULL;
 PhotonMapping* GLCanvas::photon_mapping = NULL;
+Rigger* GLCanvas::rigger = NULL;
 
 BoundingBox GLCanvas::bbox;
 GLFWwindow* GLCanvas::window = NULL;
@@ -157,6 +160,7 @@ void GLCanvas::Load(){
   raytracer = new RayTracer(mesh,args);
   radiosity = new Radiosity(mesh,args);
   photon_mapping = new PhotonMapping(mesh,args);
+  rigger = new Rigger(raytracer, new JointTree, args);
 
   raytracer->setRadiosity(radiosity);
   raytracer->setPhotonMapping(photon_mapping);
@@ -212,12 +216,13 @@ void GLCanvas::initializeVBOs(){
   GLCanvas::colormodeID = glGetUniformLocation(GLCanvas::programID, "colormode");
   // FIXME: texture still buggy
   GLCanvas::mytexture = glGetUniformLocation(GLCanvas::programID, "mytexture");
-
+  
   bbox.initializeVBOs();
   RayTree::initializeVBOs();
   radiosity->initializeVBOs();
   raytracer->initializeVBOs();
   photon_mapping->initializeVBOs();
+  rigger->initializeVBOs();
 
   HandleGLError("leaving initilizeVBOs()");
 }
@@ -229,6 +234,8 @@ void GLCanvas::setupVBOs(){
   bbox.setupVBOs();
   radiosity->setupVBOs();
   photon_mapping->setupVBOs();
+  std::cout << "setting up Joints in GlCanvas\n";
+  rigger->setupJoints();
   HandleGLError("leaving GLCanvas::setupVBOs()");
 }
 
@@ -254,6 +261,7 @@ void GLCanvas::drawVBOs(const glm::mat4 &ProjectionMatrix,const glm::mat4 &ViewM
   radiosity->drawVBOs();
   photon_mapping->drawVBOs();
   RayTree::drawVBOs();
+  rigger->drawVBOs_joints();
   if (args->intersect_backfacing) {
     glDisable(GL_CULL_FACE);
   }
@@ -269,7 +277,8 @@ void GLCanvas::cleanupVBOs(){
   radiosity->cleanupVBOs();
   photon_mapping->cleanupVBOs();  
   raytracer->cleanupVBOs();  
-  RayTree::cleanupVBOs();  
+  RayTree::cleanupVBOs();
+  rigger->cleanupVBOs();
   bbox.cleanupVBOs();
 }
 
@@ -513,10 +522,7 @@ glm::vec3 GLCanvas::TraceRay(double i, double j) {
   color = raytracer->TraceRay(r,hit,args->num_bounces);
   // add that ray for visualization
   RayTree::AddMainSegment(r,0,hit.getT(hit.num_hits()-1));
-
-
-
-
+  
   // return the color
   return color;
 }
