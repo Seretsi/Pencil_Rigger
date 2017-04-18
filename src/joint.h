@@ -4,12 +4,16 @@
 #include <glm/glm.hpp>
 #include <map>
 #include <vector>
+#include <sstream>
+#include "argparser.h"
+#include <omp.h>
 
 class Joint {
 public:
 	//Constructor
-	Joint(int id, glm::vec3 &position) : pos(position){
-		setID(id);
+	Joint() {}
+	Joint(int _id, glm::vec3 position) : pos(position), id(_id){
+		parent = -1;
 	}
 
 	//Destructor
@@ -41,19 +45,34 @@ private:
 
 class JointTree {
 public:
-	Joint& getJoint(int id) { return joints[id]; }
+	JointTree() {
+		int root = -1;
+	}
+	JointTree(int _size, int _root) {
+		assert (_size > _root);
+		assert (_root >= 0);
+		assert (_size > 0);
+		joints = std::vector<Joint>(_size);
+		root = _root;
+	}
+	Joint& getJoint(int id){ return joints[id]; }
 	
 	void addJoint(Joint &j) {
 		joints.push_back(j);
 	}
-	int size() {
+	int getRoot() const {
+		return root;
+	}
+	int size() const {
 		return joints.size();
 	}
 
 	//helpers
 	void clearJoints();
+	bool Parallel_load(std::string filename, ArgParser *args);
 
 private:
 	std::vector<Joint> joints;
+	int root;
 };
 #endif 
