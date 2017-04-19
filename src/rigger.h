@@ -34,9 +34,11 @@ public:
 	void initializeVBOs();
 	void resetVBOs();
 	void setupJoints();
+	void setupBones();
+	void drawVBOs_joints();
+	void drawVBOs_bones();
 	void drawVBOs();
 	void cleanupVBOs();
-	void drawVBOs_joints();
 
 private:
 	RayTracer* rt;
@@ -46,14 +48,14 @@ private:
 	bool render_to_a;
 
 	std::vector<VBOPosNormalColor> joints_pixel;
-	//std::vector<VBOPosNormalColor> pixels_b;
+	std::vector<VBOPosNormalColor> bones_pixels;
 	std::vector<VBOIndexedTri> joints_pixel_indices;
-	//std::vector<VBOIndexedTri> pixels_indices_b;
+	std::vector<VBOIndexedTri> bones_pixels_indices;
 
 	GLuint joints_pixels_VBO;
-	//GLuint pixels_b_VBO;
+	GLuint bones_pixels_VBO;
 	GLuint joints_pixels_indices_VBO;
-	//GLuint pixels_indices_b_VBO;
+	GLuint bones_pixels_indices_VBO;
 };
 
 #endif // !_RIGGER_H

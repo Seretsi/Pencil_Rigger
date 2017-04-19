@@ -23,6 +23,7 @@ public:
 	//Accessors
 	glm::vec3 getPos() { return pos; }
 	int getID() { return id; }
+	int getParent() { return parent; }
 	int getChild(int num) { return child[num]; }
 	int numChildren() { return child.size(); }
 	bool isSelected() { return selected; }
@@ -68,6 +69,15 @@ public:
 		return joints.size();
 	}
 	Joint& getClosest(int i);
+
+	//parent joint i to joint j
+	void parent(int i, int j) {
+		Joint *iJoint = &joints[i];
+		Joint *jJoint = &joints[j];
+
+		iJoint->setParent(j);
+		jJoint->addChild(i);
+	}
 
 	//helpers
 	void clearJoints();
