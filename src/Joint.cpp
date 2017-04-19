@@ -2,6 +2,7 @@
 #include <map>
 #include <vector>
 #include "joint.h"
+#include <algorithm>
 #include <fstream>
 
 void JointTree::clearJoints() {
