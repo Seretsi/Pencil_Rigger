@@ -6,7 +6,7 @@
 #include <vector>
 #include <sstream>
 #include "argparser.h"
-#include <omp.h>
+//#include <omp.h>
 
 class Joint {
 public:
@@ -14,6 +14,7 @@ public:
 	Joint() {}
 	Joint(int _id, glm::vec3 position) : pos(position), id(_id){
 		parent = -1;
+		child = std::vector<int>();
 	}
 
 	//Destructor
@@ -28,8 +29,8 @@ public:
 	bool isSelected() { return selected; }
 	
 	//Modifiers
-	void setParent(int &j) { parent = j; }
-	void addChild(int &j) { child.push_back(j); }
+	void setParent(int j) { parent = j; }
+	void addChild(int j) { child.push_back(j); }
 	void setPosition(glm::vec3 &position) { pos = position; }
 	void setID(int &num) { id = num; }
 
@@ -67,6 +68,7 @@ public:
 	int size() const {
 		return joints.size();
 	}
+	Joint& getClosest(int i);
 
 	//parent joint i to joint j
 	void parent(int i, int j) {
