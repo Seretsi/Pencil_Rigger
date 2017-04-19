@@ -35,11 +35,11 @@ void Rigger::setupJoints() {
 		glm::vec3 pos = glm::vec3(args->rand()*4 - 2, args->rand()*4 - 2, args->rand()*4 - 2);
 		Joint* j = new Joint(jt->size(), pos);
 		
+		jt->addJoint(*j);
 		if (i > 0) {
 			int id = i - 1;
-			j->setParent(id);
+			jt->parent(j->getID(),id);
 		}
-		jt->addJoint(*j);
 		
 	}
 	std::cout << jt->size() << std::endl;

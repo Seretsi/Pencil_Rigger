@@ -68,6 +68,15 @@ public:
 		return joints.size();
 	}
 
+	//parent joint i to joint j
+	void parent(int i, int j) {
+		Joint *iJoint = &joints[i];
+		Joint *jJoint = &joints[j];
+
+		iJoint->setParent(j);
+		jJoint->addChild(i);
+	}
+
 	//helpers
 	void clearJoints();
 	bool Parallel_load(std::string filename, ArgParser *args);
