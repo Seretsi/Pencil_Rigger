@@ -6,7 +6,7 @@
 #include "hit.h"
 #include "vbo_structs.h"
 #include "argparser.h"
-#include <omp.h>
+//#include <omp.h>
 #include "glCanvas.h"
 
 
@@ -28,6 +28,8 @@ public:
 	// set access to the other modules for hybrid rendering options
 	void setRaytracer(RayTracer *raytracer) { rt = raytracer; }
 	void setJointTree(JointTree *jointtree) { jt = jointtree; }
+
+	JointTree* getJointTree() {return jt;}
 
 	void initializeVBOs();
 	void resetVBOs();

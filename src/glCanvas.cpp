@@ -371,6 +371,13 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
 
   // other normal ascii keys...
   if ( (action == GLFW_PRESS || action == GLFW_REPEAT) && key < 256) {
+    /*
+    double x, y;
+    //Ray r = NULL;
+    Hit h;
+    int max_d;
+    Ray r;
+    Joint temp;*/
     switch (key) {
     // RAYTRACING STUFF
     case 'r':  case 'R':  case 'g':  case 'G': { 
@@ -497,6 +504,35 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
       // quit
       glfwSetWindowShouldClose(GLCanvas::window, GL_TRUE);
       break;
+
+    case 'j': case 'J':
+    /*
+      //cast a ray, intersect it with the whole mesh.
+      max_d = std::max(args->width,args->height);
+      // Here's what we do with a single sample per pixel:
+      // construct & trace a ray through the center of the pixle
+      x = (mouseX-args->width/2.0)/double(max_d)+0.5;
+      y = (mouseY-args->height/2.0)/double(max_d)+0.5;
+      r = camera->generateRay(x,y); 
+      h;
+      raytracer->CastRay(r,h,false);
+      if (h.num_hits() == 0) {
+        //future: find closest tri and project it's z-point onto the ray
+        //now: ignore it
+        std::cout << "no intersections with mesh. ignoring joint placement." << std::endl;
+      }
+      else if (h.num_hits() == 1) {
+        //add a joint 
+        temp = Joint(rigger->getJointTree()->size(), r.getOrigin()+r.getDirection()*h.getT(0));
+        //now, need to find the closest joint to that point
+      }
+      else {
+        // average the first two times together and add a joint there
+        temp = Joint(rigger->getJointTree()->size(), r.getOrigin()+r.getDirection()*((h.getT(0)+h.getT(1))/2.0f));
+        //now, need to find the closes joint to that point
+      }
+      break;
+  */
     default:
       std::cout << "UNKNOWN KEYBOARD INPUT  '" << (char)key << "'" << std::endl;
     }
