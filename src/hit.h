@@ -28,7 +28,7 @@ public:
   }
   Hit(const Hit &h) { 
     t = std::vector<float>(); 
-    for (int i = 0; i < h.t.size(); i++) {
+    for (unsigned int i = 0; i < h.t.size(); i++) {
       t.push_back(h.t[i]);
     }
     material = h.material; 

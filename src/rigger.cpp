@@ -40,7 +40,7 @@ void Rigger::setupJoints() {
 	}
 	std::cout << jt->size() << std::endl;
 	//run through "tree" and get positions to make cubes to represent joints3
-#pragma omp parallel for
+//#pragma omp parallel for
 	for (int j = 0; j < jt->size(); ++j) {
 		//run through each joint and create cube
 		//BONUS: make cube camera facing

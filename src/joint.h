@@ -6,13 +6,13 @@
 #include <vector>
 #include <sstream>
 #include "argparser.h"
-//#include <omp.h>
+#include <omp.h>
 
 class Joint {
 public:
 	//Constructor
 	Joint() {}
-	Joint(int _id, glm::vec3 position) : pos(position), id(_id){
+	Joint(int _id, glm::vec3 position) :  id(_id), pos(position){
 		parent = -1;
 		child = std::vector<int>();
 	}
@@ -47,6 +47,7 @@ private:
 class JointTree {
 public:
 	JointTree() {
+		joints = std::vector<Joint>();
 		int root = -1;
 	}
 	JointTree(int _size, int _root) {

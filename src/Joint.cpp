@@ -27,8 +27,8 @@ bool JointTree::Parallel_load(std::string filename, ArgParser* args) {
 	int num_threads = 16;
 	int num_lines_per_thread = std::max(num_joints/num_threads, 1);
 	int last_thread_extra = num_joints%num_threads;
-#pragma omp parallel for 
-	{
+#pragma omp parallel for
+	for (int i = 0; i < num_threads; i++) {
 		int startline = 1 + omp_get_thread_num()*num_lines_per_thread;
 		std::ifstream threadstream(args->path+'/'+filename);
 		if (!rigfile.good()) {
