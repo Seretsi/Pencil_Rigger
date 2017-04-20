@@ -350,7 +350,7 @@ void GLCanvas::mousemotionCB(GLFWwindow *window, double x, double y) {
     if (altKeyPressed) {
       camera->dollyCamera(y-mouseY);    
     }
-  }
+  } 
   mouseX = x;
   mouseY = y;
 }

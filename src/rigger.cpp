@@ -31,18 +31,6 @@ void Rigger::setupJoints() {
 	glm::vec4 selected_color = glm::vec4(1.0, 1.0, 0.0, 1.0);
 	glm::vec4 unselected_color = glm::vec4(1.0, 0.0, 0.0, 1.0);
 
-	for (int i = 0; i < 100; i++) {
-		glm::vec3 pos = glm::vec3(args->rand()*4 - 2, args->rand()*4 - 2, args->rand()*4 - 2);
-		Joint* j = new Joint(jt->size(), pos);
-		
-		jt->addJoint(*j);
-		if (i > 0) {
-			int id = i - 1;
-			jt->parent(j->getID(),id);
-		}
-		
-	}
-	std::cout << jt->size() << std::endl;
 	//run through "tree" and get positions to make cubes to represent joints3
 #pragma omp parallel for
 	for (int j = 0; j < jt->size(); ++j) {
