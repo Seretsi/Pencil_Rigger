@@ -43,6 +43,7 @@ void Rigger::setupJoints() {
 		
 	}
 	std::cout << jt->size() << std::endl;
+//#pragma omp parallel for
 	//run through "tree" and get positions to make cubes to represent joints3
 	for (int j = 0; j < jt->size(); ++j) {
 		//run through each joint and create cube
