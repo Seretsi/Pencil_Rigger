@@ -14,17 +14,16 @@
 void Rigger::initializeVBOs() {
 	glGenBuffers(1, &joints_pixels_VBO);
 	glGenBuffers(1, &joints_pixels_indices_VBO);
-	//render_to_a = true;
+	glGenBuffers(1, &bones_pixels_VBO);
+	glGenBuffers(1, &bones_pixels_indices_VBO);
 }
 void Rigger::resetVBOs() {
 
 	joints_pixel.clear();
-	//pixels_b.clear();
+	bones_pixels.clear();
 
 	joints_pixel_indices.clear();
-	//pixels_indices_b.clear();
-
-	//render_to_a = true;
+	bones_pixels_indices.clear();
 }
 
 void Rigger::setupJoints() {
@@ -35,8 +34,13 @@ void Rigger::setupJoints() {
 	for (int i = 0; i < 100; i++) {
 		glm::vec3 pos = glm::vec3(args->rand()*4 - 2, args->rand()*4 - 2, args->rand()*4 - 2);
 		Joint* j = new Joint(jt->size(), pos);
+		
 		jt->addJoint(*j);
-
+		if (i > 0) {
+			int id = i - 1;
+			jt->parent(j->getID(),id);
+		}
+		
 	}
 	std::cout << jt->size() << std::endl;
 	//run through "tree" and get positions to make cubes to represent joints3
@@ -132,18 +136,46 @@ void Rigger::setupJoints() {
 		sizeof(VBOIndexedTri) * joints_pixel_indices.size(),
 		&joints_pixel_indices[0], GL_STATIC_DRAW);
 }
-void Rigger::drawVBOs() {
-	glDisable(GL_CULL_FACE);;
 
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK );
+void Rigger::setupBones() {
+	float line_thickness = 0.01f; //controls the size of rendered joint nodes
+	glm::vec4 selected_color = glm::vec4(1.0, 1.0, 0.0, 1.0);
+	glm::vec4 unselected_color = glm::vec4(1.0, 0.0, 0.0, 1.0);
+
+	//run through "tree" and get positions to make cubes to represent joints3
+#pragma omp parallel for
+	for (int j = 0; j < jt->size(); ++j) {
+		Joint joint_node = jt->getJoint(j);
+		if (joint_node.getParent() < 0) { continue; }
+
+		int parent_id = joint_node.getParent();
+		Joint parent_joint = jt->getJoint(parent_id);
+
+		//color based on selection
+		glm::vec4 color;
+		joint_node.isSelected() ? color = unselected_color : color = selected_color;
+
+		addEdgeGeometry(bones_pixels, bones_pixels_indices, parent_joint.getPos(), joint_node.getPos(), color, color, line_thickness, line_thickness);
+	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, bones_pixels_VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(VBOPosNormalColor)*bones_pixels.size(), &bones_pixels[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bones_pixels_indices_VBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+		sizeof(VBOIndexedTri) * bones_pixels_indices.size(),
+		&bones_pixels_indices[0], GL_STATIC_DRAW);
+}
+
+void Rigger::drawVBOs() {
+	
 	// turn off depth buffer
-	glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_DEPTH_TEST);
 
 	void drawVBOs_joints();
+	void drawVBOs_bones();
 
-	glDisable(GL_CULL_FACE);;
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 }
 
 void Rigger::drawVBOs_joints() {
@@ -169,9 +201,32 @@ void Rigger::drawVBOs_joints() {
 	HandleGLError("exit draw joints");
 }
 
+void Rigger::drawVBOs_bones() {
+	if (joints_pixel.size() == 0) return;
+	HandleGLError("enter draw joints");
+	glBindBuffer(GL_ARRAY_BUFFER, bones_pixels_VBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bones_pixels_indices_VBO);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VBOPosNormalColor), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VBOPosNormalColor), (void*)sizeof(glm::vec3));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VBOPosNormalColor), (void*)(sizeof(glm::vec3) * 2));
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(VBOPosNormalColor), (void*)(sizeof(glm::vec3) * 2 + sizeof(glm::vec4)));
+	glDrawElements(GL_TRIANGLES,
+		bones_pixels_indices.size() * 3,
+		GL_UNSIGNED_INT, 0);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(3);
+	HandleGLError("exit draw joints");
+}
+
 void Rigger::cleanupVBOs() {
 	glDeleteBuffers(1, &joints_pixels_VBO);
-	//glDeleteBuffers(1, &pixels_b_VBO);
+	glDeleteBuffers(1, &bones_pixels_VBO);
 }
 
 
