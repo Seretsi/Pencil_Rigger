@@ -43,8 +43,8 @@ void Rigger::setupJoints() {
 		
 	}
 	std::cout << jt->size() << std::endl;
+//#pragma omp parallel for
 	//run through "tree" and get positions to make cubes to represent joints3
-#pragma omp parallel for
 	for (int j = 0; j < jt->size(); ++j) {
 		//run through each joint and create cube
 		//BONUS: make cube camera facing
@@ -143,7 +143,7 @@ void Rigger::setupBones() {
 	glm::vec4 unselected_color = glm::vec4(1.0, 0.0, 0.0, 1.0);
 
 	//run through "tree" and get positions to make cubes to represent joints3
-#pragma omp parallel for
+//#pragma omp parallel for
 	for (int j = 0; j < jt->size(); ++j) {
 		Joint joint_node = jt->getJoint(j);
 		if (joint_node.getParent() < 0) { continue; }
