@@ -184,6 +184,7 @@ void Mesh::Load(ArgParser *_args) {
 
   std::string token;
   Material *active_material = NULL;
+  active_material = new Material("",glm::vec3(0.5,0.5,0.5), glm::vec3(1,1,1), glm::vec3(0,0,0), 0.3);
   camera = NULL;
   background_color = glm::vec3(1,1,1);
 

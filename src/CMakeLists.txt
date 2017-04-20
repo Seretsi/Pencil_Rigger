@@ -105,6 +105,7 @@ message(STATUS "GLFW_STATIC_LDFLAGS: ${GLFW_STATIC_LDFLAGS}")
 
 # some linux compilations require this hack to get the libraries in the right order
 if (APPLE)
+	
 else()
   if (UNIX)
     set(MISSING_FLAGS "-lX11 -lXxf86vm -lXrandr -lpthread -lXi -lXinerama -lXcursor -lrt -ldl")
@@ -124,7 +125,10 @@ set_property(TARGET ${my_executable} APPEND_STRING PROPERTY LINK_FLAGS "${flags_
 # platform specific compiler flags to output all compiler warnings
 if (APPLE)
   # MAC OSX
+
+  set(CMAKE_CXX_COMPILER "/usr/local/bin/g++-6")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
   set_target_properties (${my_executable} PROPERTIES COMPILE_FLAGS "-g -Wall -pedantic ${BUILD_32}")
   set_property(TARGET ${my_executable} APPEND_STRING PROPERTY LINK_FLAGS "${BUILD_32}")
 else()
