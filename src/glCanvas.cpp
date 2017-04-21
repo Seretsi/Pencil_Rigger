@@ -373,13 +373,16 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
 
   // other normal ascii keys...
   if ( (action == GLFW_PRESS || action == GLFW_REPEAT) && key < 256) {
-    /*
+    
     double x, y;
+    int max_d = std::max(args->width,args->height);
+    x = (mouseX-args->width/2.0)/double(max_d)+0.5;
+    y = (mouseY-args->height/2.0)/double(max_d)+0.5;
+    Ray r = camera->generateRay(x,y); 
     //Ray r = NULL;
     Hit h;
-    int max_d;
-    Ray r;
-    Joint temp;*/
+    //Ray r = Ray(glm::vec3(0,0,0), glm::vec3(0,0,0));
+    Joint temp;
     switch (key) {
     // RAYTRACING STUFF
     case 'r':  case 'R':  case 'g':  case 'G': { 
@@ -508,16 +511,16 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
       break;
 
     case 'j': case 'J':
-    /*
+    
       //cast a ray, intersect it with the whole mesh.
-      max_d = std::max(args->width,args->height);
+        
       // Here's what we do with a single sample per pixel:
       // construct & trace a ray through the center of the pixle
-      x = (mouseX-args->width/2.0)/double(max_d)+0.5;
-      y = (mouseY-args->height/2.0)/double(max_d)+0.5;
-      r = camera->generateRay(x,y); 
+      
+      
       h;
       raytracer->CastRay(r,h,false);
+      std::cout << "got past the ray casting bit\n";
       if (h.num_hits() == 0) {
         //future: find closest tri and project it's z-point onto the ray
         //now: ignore it
@@ -534,7 +537,6 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
         //now, need to find the closes joint to that point
       }
       break;
-  */
     default:
       std::cout << "UNKNOWN KEYBOARD INPUT  '" << (char)key << "'" << std::endl;
     }
