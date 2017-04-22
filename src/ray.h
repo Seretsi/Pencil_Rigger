@@ -23,6 +23,9 @@ public:
   glm::vec3 pointAtParameter(float t) const {
     return origin+direction*t; }
 
+  void setOrigin(glm::vec3 orig) {origin = orig;}
+  void setDir(glm::vec3 dir) {direction = dir;}
+
 private:
   Ray () { assert(0); } // don't use this constructor
 

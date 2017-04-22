@@ -20,7 +20,7 @@ public:
 
   // CONSTRUCTOR & DESTRUCTOR
   Hit() { 
-    t = std::vector<float>();
+    t = std::vector<float>(0);
     material = NULL;
     normal = glm::vec3(0,0,0); 
     texture_s = 0;

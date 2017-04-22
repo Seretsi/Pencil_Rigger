@@ -48,6 +48,7 @@ bool Face::intersect(const Ray &r, Hit &h, bool intersect_backfacing) const {
 bool Face::triangle_intersect(const Ray &r, Hit &h, Vertex *a, Vertex *b, Vertex *c, bool intersect_backfacing) const {
 
   // compute the intersection with the plane of the triangle
+  std::cout << "here\n";
   Hit h2 = Hit(h);
   if (!plane_intersect(r,h2,intersect_backfacing)) return 0;  
 

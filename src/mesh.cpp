@@ -88,10 +88,10 @@ void Mesh::addFace(Vertex *a, Vertex *b, Vertex *c, Vertex *d, Material *materia
   ed->setNext(ea);
   // verify these edges aren't already in the mesh 
   // (which would be a bug, or a non-manifold mesh)
-  assert (edges.find(std::make_pair(a,b)) == edges.end());
-  assert (edges.find(std::make_pair(b,c)) == edges.end());
-  assert (edges.find(std::make_pair(c,d)) == edges.end());
-  assert (edges.find(std::make_pair(d,a)) == edges.end());
+  // assert (edges.find(std::make_pair(a,b)) == edges.end());
+  // assert (edges.find(std::make_pair(b,c)) == edges.end());
+  // assert (edges.find(std::make_pair(c,d)) == edges.end());
+  // assert (edges.find(std::make_pair(d,a)) == edges.end());
   // add the edges to the master list
   edges[std::make_pair(a,b)] = ea;
   edges[std::make_pair(b,c)] = eb;
