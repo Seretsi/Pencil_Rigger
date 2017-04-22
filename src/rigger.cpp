@@ -17,6 +17,7 @@ void Rigger::initializeVBOs() {
 	glGenBuffers(1, &bones_pixels_VBO);
 	glGenBuffers(1, &bones_pixels_indices_VBO);
 }
+
 void Rigger::resetVBOs() {
 
 	joints_pixel.clear();

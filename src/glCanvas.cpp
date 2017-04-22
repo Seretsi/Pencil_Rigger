@@ -339,6 +339,23 @@ void GLCanvas::mousemotionCB(GLFWwindow *window, double x, double y) {
     }
   }
 
+  if (shiftKeyPressed) {
+	  if (leftMousePressed) {
+		  // visualize the ray tree for the pixel at the current mouse position
+		  glfwGetWindowSize(window, &args->width, &args->height);
+		  RayTree::Activate();
+		  raytracing_divs_x = -1;
+		  raytracing_divs_y = -1;
+		  TraceRay(mouseX, args->height - mouseY);
+		  RayTree::Deactivate();
+		  glm::vec3 cp = camera->camera_position;
+		  glm::vec3 poi = camera->point_of_interest;
+		  float distance = glm::length((cp - poi) / 2.0f);
+		  RayTree::setupVBOs(distance / 500.0);
+		  
+	  }
+  }
+
   if (leftMousePressed || middleMousePressed || rightMousePressed) {
     if (shiftKeyPressed) {
       camera->zoomCamera(mouseY-y);
