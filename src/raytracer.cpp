@@ -20,7 +20,7 @@ bool RayTracer::CastRay(const Ray &ray, Hit &h, bool use_rasterized_patches) con
   for (int i = 0; i < mesh->numOriginalQuads(); i++) {
     Face *f = mesh->getOriginalQuad(i);
     std::cout << "works" <<std::endl;
-    if (f->intersect(ray,h,args->intersect_backfacing)) answer = true;
+     if (f->intersect(ray,h,args->intersect_backfacing)) answer = true;
     
   }
 
