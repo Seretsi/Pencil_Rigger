@@ -9,8 +9,27 @@ void JointTree::clearJoints() {
 	//use omp to enter jointtree and delete tree from root
 }
 
-Joint& JointTree::getClosest(int i) {
-	return joints[i];
+int JointTree::getClosest(int i) {
+	int closest = -1;
+	float shortest = -1;
+	glm::vec3 jt = joints[i].getPos();
+	for (int j = 0; j < i; j++) {
+		glm::vec3 cnd = joints[j].getPos();
+		float distance = sqrt(pow((cnd.x-jt.x), 2) + pow((cnd.y-jt.y), 2) + pow((cnd.z-jt.z), 2));
+		if (closest == -1 || (distance < shortest)) {
+			closest = j;
+			shortest = distance;
+		}
+	}
+	for (int j = i+1; j < joints.size(); j++) {
+		glm::vec3 cnd = joints[j].getPos();
+		float distance = sqrt(pow((cnd.x-jt.x), 2) + pow((cnd.y-jt.y), 2) + pow((cnd.z-jt.z), 2));
+		if (closest == -1 || (distance < shortest)) {
+			closest = j;
+			shortest = distance;
+		}
+	}
+	return closest;
 	//return NULL;
 }
 

@@ -60,8 +60,12 @@ public:
 	}
 	Joint& getJoint(int id){ return joints[id]; }
 	
-	void addJoint(Joint &j) {
+	int addJoint(Joint &j) {
 		joints.push_back(j);
+		if (joints.size() == 1) {
+			root = 1;
+		}
+		return joints.size()-1;
 	}
 	int getRoot() const {
 		return root;
@@ -69,7 +73,7 @@ public:
 	int size() const {
 		return joints.size();
 	}
-	Joint& getClosest(int i);
+	int getClosest(int i);
 
 	//parent joint i to joint j
 	void parent(int i, int j) {

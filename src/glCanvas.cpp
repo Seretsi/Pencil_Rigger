@@ -381,8 +381,10 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
     Ray r = camera->generateRay(x,y); 
     //Ray r = NULL;
     Hit h;
+    int loc, parloc;
     //Ray r = Ray(glm::vec3(0,0,0), glm::vec3(0,0,0));
     Joint temp;
+    Joint par;
     switch (key) {
     // RAYTRACING STUFF
     case 'r':  case 'R':  case 'g':  case 'G': { 
@@ -413,16 +415,7 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
     }
     case 't':  case 'T': {
       // visualize the ray tree for the pixel at the current mouse position
-      glfwGetWindowSize(window, &args->width, &args->height);
-      RayTree::Activate();
-      raytracing_divs_x = -1;
-      raytracing_divs_y = -1;
-      TraceRay(mouseX,args->height-mouseY);
-      RayTree::Deactivate();
-      glm::vec3 cp = camera->camera_position;
-      glm::vec3 poi = camera->point_of_interest;
-      float distance = glm::length((cp-poi)/2.0f);
-      RayTree::setupVBOs(distance / 500.0); 
+      
       radiosity->setupVBOs();
       photon_mapping->setupVBOs();
       break; }
@@ -515,27 +508,11 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
       //cast a ray, intersect it with the whole mesh.
         
       // Here's what we do with a single sample per pixel:
-      // construct & trace a ray through the center of the pixle
-      
-      
-      h;
-      raytracer->CastRay(r,h,false);
-      std::cout << "got past the ray casting bit\n";
-      if (h.num_hits() == 0) {
-        //future: find closest tri and project it's z-point onto the ray
-        //now: ignore it
-        std::cout << "no intersections with mesh. ignoring joint placement." << std::endl;
-      }
-      else if (h.num_hits() == 1) {
-        //add a joint 
-        temp = Joint(rigger->getJointTree()->size(), r.getOrigin()+r.getDirection()*h.getT(0));
-        //now, need to find the closest joint to that point
-      }
-      else {
-        // average the first two times together and add a joint there
-        temp = Joint(rigger->getJointTree()->size(), r.getOrigin()+r.getDirection()*((h.getT(0)+h.getT(1))/2.0f));
-        //now, need to find the closes joint to that point
-      }
+      // construct & trace a ray through the center of the pixel
+       //rigger->addJoint(x,y);
+       
+
+       
       break;
     default:
       std::cout << "UNKNOWN KEYBOARD INPUT  '" << (char)key << "'" << std::endl;
@@ -552,16 +529,47 @@ glm::vec3 GLCanvas::TraceRay(double i, double j) {
 
   // compute and set the pixel color
   int max_d = std::max(args->width,args->height);
-  glm::vec3 color;
+  glm::vec3 color = glm::vec3(0,0,0);
   // Here's what we do with a single sample per pixel:
   // construct & trace a ray through the center of the pixle
   double x = (i-args->width/2.0)/double(max_d)+0.5;
   double y = (j-args->height/2.0)/double(max_d)+0.5;
   Ray r = camera->generateRay(x,y); 
-  Hit hit;
-  color = raytracer->TraceRay(r,hit,args->num_bounces);
+  Hit h;
+ raytracer->CastRay(r,h,false);
+ std::cout << "got past the ray casting bit\n";
+ if (h.num_hits() == 0) {
+   //future: find closest tri and project it's z-point onto the ray
+   //now: ignore it
+   std::cout << "no intersections with mesh. ignoring joint placement." << std::endl;
+ }
+ else if (h.num_hits() == 1) {
+   //add a joint 
+   Joint temp = Joint(rigger->getJointTree()->size(), r.getOrigin()+r.getDirection()*h.getT(0));
+   int  loc = rigger->getJointTree()->addJoint(temp);
+   //now, need to find the closest joint to that point
+   if (loc == 1) {}
+   else {
+      int parloc = rigger->getJointTree()->getClosest(rigger->getJointTree()->size()-1);
+      Joint par = rigger->getJointTree()->getJoint(parloc);
+      rigger->getJointTree()->parent(loc, parloc);
+   }
+
+ }
+ else {
+   // average the first two times together and add a joint there
+   Joint temp = Joint(rigger->getJointTree()->size(), r.getOrigin()+r.getDirection()*((h.getT(0)+h.getT(1))/2.0f));
+   int loc = rigger->getJointTree()->addJoint(temp);
+   //now, need to find the closest joint to that point
+   if (loc == 1) {}
+   else {
+      int parloc = rigger->getJointTree()->getClosest(rigger->getJointTree()->size()-1);
+      Joint par = rigger->getJointTree()->getJoint(parloc);
+      rigger->getJointTree()->parent(loc, parloc);
+   }
+}
   // add that ray for visualization
-  RayTree::AddMainSegment(r,0,hit.getT(hit.num_hits()-1));
+  RayTree::AddMainSegment(r,0,h.getT(h.num_hits()-1));
   
   // return the color
   return color;

@@ -19,9 +19,8 @@ bool RayTracer::CastRay(const Ray &ray, Hit &h, bool use_rasterized_patches) con
   // intersect each of the quads
   for (int i = 0; i < mesh->numOriginalQuads(); i++) {
     Face *f = mesh->getOriginalQuad(i);
-    std::cout << "works" <<std::endl;
     if (f->intersect(ray,h,args->intersect_backfacing)) answer = true;
-    
+
   }
 
   // intersect each of the primitives (either the patches, or the original primitives)
@@ -65,7 +64,7 @@ glm::vec3 RayTracer::TraceRay(Ray &ray, Hit &hit, int bounce_count) const {
  
   
   glm::vec3 normal = hit.getNormal();
-  glm::vec3 point = ray.pointAtParameter(hit.getT(hit.num_hits()-1));
+  glm::vec3 point = ray.pointAtParameter(hit.getT(std::max(hit.num_hits()-1, 0)));
   glm::vec3 answer;
 
   // ----------------------------------------------
