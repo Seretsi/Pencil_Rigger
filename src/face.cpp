@@ -48,10 +48,9 @@ bool Face::intersect(const Ray &r, Hit &h, bool intersect_backfacing) const {
 bool Face::triangle_intersect(const Ray &r, Hit &h, Vertex *a, Vertex *b, Vertex *c, bool intersect_backfacing) const {
 
   // compute the intersection with the plane of the triangle
-  std::cout << "here\n";
-  Hit h2 = Hit(h);
-  if (!plane_intersect(r,h2,intersect_backfacing)) return 0;  
 
+  Hit h2 = Hit(h);
+  if (!plane_intersect(r,h2,intersect_backfacing)) return 0; 
   // figure out the barycentric coordinates:
   glm::vec3 Ro = r.getOrigin();
   glm::vec3 Rd = r.getDirection();
@@ -88,7 +87,7 @@ bool Face::triangle_intersect(const Ray &r, Hit &h, Vertex *a, Vertex *b, Vertex
     float t_s = alpha * a->get_s() + beta * b->get_s() + gamma * c->get_s();
     float t_t = alpha * a->get_t() + beta * b->get_t() + gamma * c->get_t();
     h.setTextureCoords(t_s,t_t);
-    assert (h.getT(h.num_hits()-1) >= EPSILON);
+    assert (h.getT(std::max(0, h.num_hits()-1)) >= EPSILON);
     return 1;
   }
 
@@ -120,8 +119,10 @@ bool Face::plane_intersect(const Ray &r, Hit &h, bool intersect_backfacing) cons
     return 0; // hit the backside
 
   float t = numer / denom;
-  if (t > EPSILON && t < h.getT(h.num_hits()-1)) {
+  if (t > EPSILON) {
+    //std::cerr << t << std::endl;
     h.set(t,this->getMaterial(),normal);
+    //std::cerr << h.getT(h.num_hits()-1) << std::endl;
     assert (h.getT(h.num_hits()-1) >= EPSILON);
     return 1;
   }
