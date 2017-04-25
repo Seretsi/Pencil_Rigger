@@ -16,6 +16,8 @@ void Rigger::initializeVBOs() {
 	glGenBuffers(1, &joints_pixels_indices_VBO);
 	glGenBuffers(1, &bones_pixels_VBO);
 	glGenBuffers(1, &bones_pixels_indices_VBO);
+	glGenBuffers(1, &sketch_pixels_VBO);
+	glGenBuffers(1, &sketch_pixels_indices_VBO);
 }
 
 void Rigger::resetVBOs() {
@@ -117,13 +119,15 @@ void Rigger::setupJoints() {
 		joints_pixel_indices.push_back(VBOIndexedTri(start + 2, start + 1, start + 3));
 	}
 
-	glBindBuffer(GL_ARRAY_BUFFER, joints_pixels_VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(VBOPosNormalColor)*joints_pixel.size(), &joints_pixel[0], GL_STATIC_DRAW);
-	
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, joints_pixels_indices_VBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-		sizeof(VBOIndexedTri) * joints_pixel_indices.size(),
-		&joints_pixel_indices[0], GL_STATIC_DRAW);
+	if (joints_pixel.size() > 0) {
+		glBindBuffer(GL_ARRAY_BUFFER, joints_pixels_VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(VBOPosNormalColor)*joints_pixel.size(), &joints_pixel[0], GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, joints_pixels_indices_VBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+			sizeof(VBOIndexedTri) * joints_pixel_indices.size(),
+			&joints_pixel_indices[0], GL_STATIC_DRAW);
+	}
 }
 
 void Rigger::setupBones() {
@@ -147,13 +151,49 @@ void Rigger::setupBones() {
 		addEdgeGeometry(bones_pixels, bones_pixels_indices, parent_joint.getPos(), joint_node.getPos(), color, color, line_thickness, line_thickness);
 	}
 
-	glBindBuffer(GL_ARRAY_BUFFER, bones_pixels_VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(VBOPosNormalColor)*bones_pixels.size(), &bones_pixels[0], GL_STATIC_DRAW);
+	if (bones_pixels.size() > 0) {
+		glBindBuffer(GL_ARRAY_BUFFER, bones_pixels_VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(VBOPosNormalColor)*bones_pixels.size(), &bones_pixels[0], GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bones_pixels_indices_VBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-		sizeof(VBOIndexedTri) * bones_pixels_indices.size(),
-		&bones_pixels_indices[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bones_pixels_indices_VBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+			sizeof(VBOIndexedTri) * bones_pixels_indices.size(),
+			&bones_pixels_indices[0], GL_STATIC_DRAW);
+	}
+}
+
+void Rigger::setupsketch() {
+	//normals
+	glm::vec3 normal;
+	if (sketch_strokes_coords.size() > 0) {
+		normal = computeNormal(sketch_strokes[0], sketch_strokes[1], sketch_strokes[2]);
+	}
+
+	//color based on selection
+	glm::vec4 color = glm::vec4(0.0, 0.0, 1.0, 0.5);
+
+//#pragma omp parallel for
+	for (int s = 0; s < sketch_strokes_coords.size(); s++) {
+		//FF - Front Face
+		int start = s*4;
+		start = sketch_pixel.size();
+		sketch_pixel.push_back(VBOPosNormalColor(sketch_strokes[start], normal, color));
+		sketch_pixel.push_back(VBOPosNormalColor(sketch_strokes[start+1], normal, color));
+		sketch_pixel.push_back(VBOPosNormalColor(sketch_strokes[start+2], normal, color));
+		sketch_pixel.push_back(VBOPosNormalColor(sketch_strokes[start+3], normal, color));
+		sketch_pixel_indices.push_back(VBOIndexedTri(start, start + 1, start + 2));
+		sketch_pixel_indices.push_back(VBOIndexedTri(start + 2, start + 1, start + 3));
+	}
+	
+	if (sketch_pixel.size() > 0) {
+		glBindBuffer(GL_ARRAY_BUFFER, sketch_pixels_VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(VBOPosNormalColor)*sketch_pixel.size(), &sketch_pixel[0], GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sketch_pixels_indices_VBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+			sizeof(VBOIndexedTri) * sketch_pixel_indices.size(),
+			&joints_pixel_indices[0], GL_STATIC_DRAW);
+	}
 }
 
 void Rigger::drawVBOs() {
@@ -213,9 +253,43 @@ void Rigger::drawVBOs_bones() {
 	HandleGLError("exit draw joints");
 }
 
+void Rigger::drawVBOs_sketch(){
+	if (sketch_pixel.size() == 0) return;
+	HandleGLError("enter draw joints");
+	glBindBuffer(GL_ARRAY_BUFFER, sketch_pixels_VBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sketch_pixels_indices_VBO);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VBOPosNormalColor), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VBOPosNormalColor), (void*)sizeof(glm::vec3));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VBOPosNormalColor), (void*)(sizeof(glm::vec3) * 2));
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(VBOPosNormalColor), (void*)(sizeof(glm::vec3) * 2 + sizeof(glm::vec4)));
+	glDrawElements(GL_TRIANGLES,
+		sketch_pixel_indices.size() * 3,
+		GL_UNSIGNED_INT, 0);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(3);
+	HandleGLError("exit draw joints");
+}
+
 void Rigger::cleanupVBOs() {
 	glDeleteBuffers(1, &joints_pixels_VBO);
 	glDeleteBuffers(1, &bones_pixels_VBO);
+	glDeleteBuffers(1, &sketch_pixels_VBO);
+}
+
+//add one "pixel" of line stroke using square vertex coordinates
+void Rigger::sketch(glm::vec3 center, glm::vec3 upRight, glm::vec3 upLeft, glm::vec3 lowRight, glm::vec3 lowLeft){
+	sketch_strokes_coords.push_back(center);
+	sketch_strokes.push_back(upLeft);
+	sketch_strokes.push_back(upRight);
+	sketch_strokes.push_back(lowLeft);
+	sketch_strokes.push_back(lowRight);
+
 }
 
 

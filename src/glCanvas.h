@@ -66,7 +66,7 @@ public:
   static bool controlKeyPressed;
   static bool altKeyPressed;
   static bool superKeyPressed;
-
+  static bool drawing;
 
   // SPECIFIC TO HW3
   static int raytracing_x;
@@ -88,6 +88,7 @@ public:
 
   static int DrawPixel();
   static glm::vec3 TraceRay(double i, double j);
+  static glm::vec3 TracePencilMode(double i, double j);
   static glm::vec3 GetPos(double i, double j);
 
   // Callback functions for mouse and keyboard events
