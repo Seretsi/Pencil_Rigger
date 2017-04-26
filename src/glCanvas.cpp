@@ -389,7 +389,8 @@ void GLCanvas::mousemotionCB(GLFWwindow *window, double x, double y) {
 
 					double down_rightx = (i+1 - args->width / 2.0) / double(max_d) + 0.5;
 					double down_righty = (j-1 - args->height / 2.0) / double(max_d) + 0.5;
-
+					//debugging prints
+					printf("%f, %f | %f, %f | %f ,%f | %f, %f\n", up_leftx, up_lefty, up_rightx, up_righty, down_leftx, down_lefty, down_rightx, down_righty);
 				Ray r = camera->generateRay(x, y);
 					Ray r_ul = camera->generateRay(up_leftx, up_lefty); //ray upper left (ul)
 					Ray r_ur = camera->generateRay(up_rightx, up_righty);
