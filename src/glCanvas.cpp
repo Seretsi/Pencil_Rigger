@@ -582,8 +582,14 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
       break;
 
     case 'j': case 'J':
+    if (rigger->getJointTree()->size()) {
       rigger->getJointTree()->Save("../models/test.rig");
       std::cout << "saved rig\n";
+    }
+    else {
+      rigger->getJointTree()->Parallel_load("../models/test.rig");
+    }
+      
       //cast a ray, intersect it with the whole mesh.
         
       // Here's what we do with a single sample per pixel:
