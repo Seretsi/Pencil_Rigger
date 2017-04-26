@@ -43,7 +43,7 @@ bool RayTracer::CastRay(const Ray &ray, Hit &h, bool use_rasterized_patches) con
 glm::vec3 RayTracer::TraceRay(Ray &ray, Hit &hit, int bounce_count) const {
 
   // First cast a ray and see if we hit anything.
-  hit = Hit();
+  hit = Hit(); 
   bool intersect = CastRay(ray,hit,false);
     
   // if there is no intersection, simply return the background color

@@ -36,6 +36,8 @@ Rigger* GLCanvas::rigger = NULL;
 BoundingBox GLCanvas::bbox;
 GLFWwindow* GLCanvas::window = NULL;
 
+bool GLCanvas::drawing = false;
+
 // mouse position
 int GLCanvas::mouseX = 0;
 int GLCanvas::mouseY = 0;
@@ -237,6 +239,7 @@ void GLCanvas::setupVBOs(){
   photon_mapping->setupVBOs();
   rigger->setupJoints();
   rigger->setupBones();
+  rigger->setupsketch();
   HandleGLError("leaving GLCanvas::setupVBOs()");
 }
 
@@ -265,6 +268,8 @@ void GLCanvas::drawVBOs(const glm::mat4 &ProjectionMatrix,const glm::mat4 &ViewM
   //rigger->drawVBOs();
   rigger->drawVBOs_joints();
   rigger->drawVBOs_bones();
+  rigger->drawVBOs_sketch();
+
   if (args->intersect_backfacing) {
     glDisable(GL_CULL_FACE);
   }
@@ -330,7 +335,7 @@ void GLCanvas::mousemotionCB(GLFWwindow *window, double x, double y) {
   }
 
   // camera controls that work well for a 3 button mouse
-  if (!shiftKeyPressed && !controlKeyPressed && !altKeyPressed) {
+  if (!drawing && !shiftKeyPressed && !controlKeyPressed && !altKeyPressed) {
     if (leftMousePressed) {
       camera->rotateCamera(mouseX-x,mouseY-y);
     } else if (middleMousePressed)  {
@@ -340,7 +345,7 @@ void GLCanvas::mousemotionCB(GLFWwindow *window, double x, double y) {
     }
   }
 
-  if (leftMousePressed || middleMousePressed || rightMousePressed) {
+  if (!drawing && (leftMousePressed || middleMousePressed || rightMousePressed)) {
     if (shiftKeyPressed) {
       camera->zoomCamera(mouseY-y);
     }
@@ -351,6 +356,66 @@ void GLCanvas::mousemotionCB(GLFWwindow *window, double x, double y) {
     if (altKeyPressed) {
       camera->dollyCamera(y-mouseY);    
     }
+  }
+  else {
+	 // assert(drawing == true);
+
+	  if (shiftKeyPressed) {
+		if (leftMousePressed) {
+			// visualize the ray tree for the pixel at the current mouse position
+			glfwGetWindowSize(window, &args->width, &args->height);
+			 RayTree::Activate();
+			raytracing_divs_x = -1;
+			raytracing_divs_y = -1;
+			//TracePencilMode(mouseX, args->height - mouseY);
+
+				// compute and set the pixel color
+				int max_d = std::max(args->width, args->height);
+				glm::vec3 color;
+				bool in_line_with_geo;
+				// Here's what we do with a single sample per pixel:
+				// construct & trace a ray through the center of the pixle
+				float i = mouseX, j = (args->height - mouseY);
+				double x = (i - args->width / 2.0) / double(max_d) + 0.5;
+				double y = (j - args->height / 2.0) / double(max_d) + 0.5;
+
+					double up_leftx = (i-1 - args->width / 2.0) / double(max_d) + 0.5;
+					double up_lefty = (j+1 - args->height / 2.0) / double(max_d) + 0.5;
+
+					double up_rightx = (i+1 - args->width / 2.0) / double(max_d) + 0.5;
+					double up_righty = (j+1 - args->height / 2.0) / double(max_d) + 0.5;
+
+					double down_leftx = (i-1 - args->width / 2.0) / double(max_d) + 0.5;
+					double down_lefty = (j-1 - args->height / 2.0) / double(max_d) + 0.5;
+
+					double down_rightx = (i+1 - args->width / 2.0) / double(max_d) + 0.5;
+					double down_righty = (j-1 - args->height / 2.0) / double(max_d) + 0.5;
+
+				Ray r = camera->generateRay(x, y);
+					Ray r_ul = camera->generateRay(up_leftx, up_lefty); //ray upper left (ul)
+					Ray r_ur = camera->generateRay(up_rightx, up_righty);
+					Ray r_dl = camera->generateRay(down_leftx, down_lefty);
+					Ray r_dr = camera->generateRay(down_rightx, down_righty);
+				
+				Hit hit;
+				float draw_distance = 5;
+				//FIXME: boolean check broken. Needs to also ignore background geometry like the floor and walls
+				in_line_with_geo = raytracer->CastRay(r, hit, false);
+				if (in_line_with_geo) {
+					// add that ray for visualization
+					RayTree::AddMainSegment(r, 0, hit.getT(hit.num_hits() - 1));
+					rigger->sketch(r.pointAtParameter(draw_distance), r_ul.pointAtParameter(draw_distance),
+							r_ur.pointAtParameter(draw_distance), r_dl.pointAtParameter(draw_distance), r_dr.pointAtParameter(draw_distance));
+				}
+
+			RayTree::Deactivate();
+			glm::vec3 cp = camera->camera_position;
+			glm::vec3 poi = camera->point_of_interest;
+			float distance = glm::length((cp - poi) / 2.0f);
+			RayTree::setupVBOs(distance / 500.0);
+			std::cout << "sketching\n";
+		}
+	  }
   }
   mouseX = x;
   mouseY = y;
@@ -387,6 +452,18 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
     Joint temp;
     Joint par;
     switch (key) {
+
+	case 'z': case 'Z': {
+		if (drawing) {
+			std::cout << "toggling draw mode: OFF\n";
+			drawing = false;
+		}
+		else {
+			std::cout << "toggling draw mode: ON\n";
+			drawing = true;
+		}
+		break;
+	}
     // RAYTRACING STUFF
     case 'r':  case 'R':  case 'g':  case 'G': { 
       args->raytracing_animation = !args->raytracing_animation;
@@ -576,7 +653,26 @@ glm::vec3 GLCanvas::TraceRay(double i, double j) {
   return color;
 }
 
+// trace a ray through pixel (i,j) of the image an return the color
+glm::vec3 GLCanvas::TracePencilMode(double i, double j) {
 
+	// compute and set the pixel color
+	int max_d = std::max(args->width, args->height);
+	glm::vec3 color;
+	bool in_line_with_geo;
+	// Here's what we do with a single sample per pixel:
+	// construct & trace a ray through the center of the pixle
+	double x = (i - args->width / 2.0) / double(max_d) + 0.5;
+	double y = (j - args->height / 2.0) / double(max_d) + 0.5;
+	Ray r = camera->generateRay(x, y);
+	Hit hit;
+	in_line_with_geo = raytracer->CastRay(r, hit, false);
+	// add that ray for visualization
+	RayTree::AddMainSegment(r, 0, hit.getT(hit.num_hits() - 1));
+
+	// return the color
+	return color;
+}
 
 
 // for visualization: find the "corners" of a pixel on an image plane
