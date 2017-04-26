@@ -59,12 +59,12 @@ bool JointTree::Parallel_load(std::string filename, ArgParser* args) {
 		if (omp_get_thread_num() == num_threads -1) {
 			x += last_thread_extra;
 		}
-		int i = 0;
-		while (i < startline) {
+		int s = 0;
+		while (s < startline) {
 			std::getline(threadstream, threadtoken);
-			i++;
+			s++;
 		}
-		for (i = 0; i < x; i++) {
+		for (s = 0; s < x; s++) {
 			std::getline(threadstream, threadtoken);
 			std::stringstream ss(threadtoken);
 			float x, y, z;
