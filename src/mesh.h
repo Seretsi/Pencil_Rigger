@@ -40,6 +40,7 @@ public:
   // ========
   // VERTICES
   int numVertices() const { return vertices.size(); }
+  Vertex* addVertex(const glm::vec3 &pos, int loc);
   Vertex* addVertex(const glm::vec3 &pos);
   // look up vertex by index from original .obj file
   Vertex* getVertex(int i) const {
@@ -118,6 +119,9 @@ private:
   void addFace(Vertex *a, Vertex *b, Vertex *c, Vertex *d, Material *material, enum FACE_TYPE face_type);
   void removeFaceEdges(Face *f);
   void addPrimitive(Primitive *p); 
+  void setVertSize(int i) {
+    vertices = std::vector<Vertex*>(i);
+  }
 
   // ==============
   // REPRESENTATION

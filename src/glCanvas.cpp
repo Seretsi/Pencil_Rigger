@@ -159,7 +159,7 @@ void GLCanvas::Load(){
   mesh = new Mesh();
   mesh->Load(args);
   //mesh->Parallel(args);
-  //exit(1);
+
   raytracer = new RayTracer(mesh,args);
   radiosity = new Radiosity(mesh,args);
   photon_mapping = new PhotonMapping(mesh,args);
@@ -493,7 +493,7 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
     }
     case 't':  case 'T': {
       // visualize the ray tree for the pixel at the current mouse position
-      
+      TraceRay(mouseX, args->height-mouseY);
       radiosity->setupVBOs();
       photon_mapping->setupVBOs();
       break; }
@@ -582,7 +582,8 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
       break;
 
     case 'j': case 'J':
-    
+      rigger->getJointTree()->Save("../models/test.rig");
+      std::cout << "saved rig\n";
       //cast a ray, intersect it with the whole mesh.
         
       // Here's what we do with a single sample per pixel:
@@ -622,30 +623,33 @@ glm::vec3 GLCanvas::TraceRay(double i, double j) {
    std::cout << "no intersections with mesh. ignoring joint placement." << std::endl;
  }
  else if (h.num_hits() == 1) {
+  std::cout << "one intersection. woop woop.\n";
    //add a joint 
    Joint temp = Joint(rigger->getJointTree()->size(), r.getOrigin()+r.getDirection()*h.getT(0));
    int  loc = rigger->getJointTree()->addJoint(temp);
    //now, need to find the closest joint to that point
-   if (loc == 1) {}
+   if (loc == 0) {}
    else {
       int parloc = rigger->getJointTree()->getClosest(rigger->getJointTree()->size()-1);
       Joint par = rigger->getJointTree()->getJoint(parloc);
       rigger->getJointTree()->parent(loc, parloc);
+
    }
 
  }
  else {
    // average the first two times together and add a joint there
-   Joint temp = Joint(rigger->getJointTree()->size(), r.getOrigin()+r.getDirection()*((h.getT(0)+h.getT(1))/2.0f));
-   int loc = rigger->getJointTree()->addJoint(temp);
-   //now, need to find the closest joint to that point
-   if (loc == 1) {}
+  std::cout << "2+ hits. woop woop woop.\n";
+    Joint temp = Joint(rigger->getJointTree()->size(), r.getOrigin()+r.getDirection()*((h.getT(0)+h.getT(1))/2.0f));
+    int loc = rigger->getJointTree()->addJoint(temp);
+   // //now, need to find the closest joint to that point
+   if (loc == 0) {}
    else {
       int parloc = rigger->getJointTree()->getClosest(rigger->getJointTree()->size()-1);
       Joint par = rigger->getJointTree()->getJoint(parloc);
       rigger->getJointTree()->parent(loc, parloc);
    }
-}
+  }
   // add that ray for visualization
   RayTree::AddMainSegment(r,0,h.getT(h.num_hits()-1));
   

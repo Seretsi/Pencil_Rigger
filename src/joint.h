@@ -87,6 +87,7 @@ public:
 	//helpers
 	void clearJoints();
 	bool Parallel_load(std::string filename, ArgParser *args);
+	bool Save(std::string fname);
 
 private:
 	std::vector<Joint> joints;
