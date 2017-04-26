@@ -6,6 +6,9 @@
 #include <string>
 #include <utility>
 #include <iterator>
+#include <ios>
+#include <omp.h>
+#include <sstream>
 
 
 #include "argparser.h"
@@ -88,10 +91,10 @@ void Mesh::addFace(Vertex *a, Vertex *b, Vertex *c, Vertex *d, Material *materia
   ed->setNext(ea);
   // verify these edges aren't already in the mesh 
   // (which would be a bug, or a non-manifold mesh)
-  // assert (edges.find(std::make_pair(a,b)) == edges.end());
-  // assert (edges.find(std::make_pair(b,c)) == edges.end());
-  // assert (edges.find(std::make_pair(c,d)) == edges.end());
-  // assert (edges.find(std::make_pair(d,a)) == edges.end());
+  assert (edges.find(std::make_pair(a,b)) == edges.end());
+  assert (edges.find(std::make_pair(b,c)) == edges.end());
+  assert (edges.find(std::make_pair(c,d)) == edges.end());
+  assert (edges.find(std::make_pair(d,a)) == edges.end());
   // add the edges to the master list
   edges[std::make_pair(a,b)] = ea;
   edges[std::make_pair(b,c)] = eb;
@@ -169,6 +172,133 @@ void Mesh::setParentsChild(Vertex *p1, Vertex *p2, Vertex *child) {
 // ===============================================================================
 // the load function parses our (non-standard) extension of very simple .obj files
 // ===============================================================================
+
+void Mesh::Parallel(ArgParser *_args) {
+  //set up filename, open up original ifstream for counting number of points
+  args = _args;
+  std::string file = args->path+'/'+args->input_file;
+  std::ifstream objfile(file.c_str());
+  if (!objfile.good()) {
+    return;
+  }
+  int num_verts = 0;
+  std::string token;
+  do {
+    getline(objfile, token);
+    num_verts++;
+  }
+  while ((token != "")&&(token != "\n"));
+
+  //now, set it back to the beginning. You still need to write the code for this one to parse the extra lines in front.
+
+  objfile.close();
+  objfile.open(file);
+  
+  //calculate the number of lines, etc for each thread to handle
+  const int nt = 8;
+  int extra_lines = num_verts%nt;
+  int lpt = num_verts/nt;
+  std::cout << "number of verts: " << num_verts << "\n";
+  std::cout << "lines per thread: " << lpt << "\n";
+  std::cout << "extra lines at beginning: " << extra_lines << "\n";
+  std::cout << "opening extra file pointers...\n";
+  //each thread has its own ifstream
+  std::ifstream fp[nt];
+  for (int i = 0; i < nt; i++) {
+    //open new ifstream and seek it to the start of the points it will read
+    fp[i].open(file, std::ifstream::in);
+    int temp_ct = 0;
+    std::string tok;
+    while (temp_ct < extra_lines+i*lpt) {
+      //just skip the line and inc
+      getline(fp[i],tok);
+      temp_ct++;
+    }
+    std::cout << "thread " << i << " will start at line " << temp_ct << "\n";
+  }
+  int lock = 0;
+#pragma omp parallel for num_threads(nt)
+  for (int i = 0; i < num_verts; i++) {
+    //each thread will getline with its respective fp
+    //need to add a lock for push_back to make sure shit doesn't hit the fan
+    int tn = omp_get_thread_num();
+    std::string tok;
+    getline(fp[tn], tok);
+    std::string toss_out;
+    float x, y, z;
+    std::stringstream ss(tok, std::ios_base::in);
+    ss >> toss_out >> x >> y >> z;
+    glm::vec3 pt(x,y,z);
+    // while (lock);
+    // lock = 1;
+    #pragma omp critical
+    {
+    addVertex(pt);
+    //lock = 0;
+    }
+  }
+  std::cout << "finished reading verts\n";
+  // there should be a line of space between these
+  // advance the objfile to count the number of face lines
+  do {
+    getline(objfile, token);
+  }
+  while ((token != "")&&(token != "\n"));
+
+  //now find number of faces
+  num_verts = 0;
+  do {
+    getline(objfile, token);
+    std::cout << token << std::endl;
+    num_verts++;
+  }
+  while ((token != "")&&(token != "\n"));
+  std::cout << "number of face lines: " << num_verts;
+  //compute thread info
+  extra_lines = num_verts%nt;
+  lpt = num_verts/nt;
+  std::cout << "number of faces: " << num_verts << std::endl;
+  std::cout << "number of extra lines: " << extra_lines << std::endl;
+  std::cout << "number of lines per thread: " << lpt << std::endl;
+  //advance threads to their starting positions
+  for (int i = 0; i < nt; i++) {
+    std::string tok;
+    if ( i != nt -1) {
+      do {
+        getline(fp[i],tok);
+      }
+      while ((tok != "") && (tok != "\n"));
+    }
+    int t = 0;
+    while (t < i*lpt+extra_lines) {
+      getline(fp[i], tok);
+      t++;
+    }
+    std::cout << "thread " << i << ": " << i*lpt+extra_lines << std::endl;
+  }
+  
+  Material* active_material = new Material("",glm::vec3(0.5,0.5,0.5), glm::vec3(1,1,1), glm::vec3(0,0,0), 0.3);
+#pragma omp parallel for num_threads(nt)
+  for (int i = 0; i < num_verts; i++) {
+    int tn = omp_get_thread_num();
+    std::string tok;
+    getline(fp[tn], tok);
+    std::string ignore;
+    int f, s, t, fr;
+    if (tok == "") continue;
+    std::stringstream ss(tok, std::ios_base::in);
+    ss >> ignore >> f >> s >> t >> fr;
+    f--;s--;t--;fr--;
+    #pragma omp critical
+    {
+      //std::cerr << "line " << tn << ": " << tok << std::endl;
+      //std::cerr << "thread " << tn << ": " << f << " " << s << " " << t << " " << fr << "\n";
+      std::cerr << "thread " << tn <<  ": number of shits read: " << i%lpt << std::endl;
+      addOriginalQuad(getVertex(f),getVertex(s),getVertex(t),getVertex(fr),active_material);
+    }
+  }
+  std::cout << "finished assembling faces\n";
+}
 
 
 void Mesh::Load(ArgParser *_args) {

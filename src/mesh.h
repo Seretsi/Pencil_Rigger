@@ -35,6 +35,7 @@ public:
   Mesh() { bbox = NULL; }
   virtual ~Mesh();
   void Load(ArgParser *_args);
+  void Parallel(ArgParser *_args);
     
   // ========
   // VERTICES
@@ -97,6 +98,8 @@ public:
     addFace(a,b,c,d,material,FACE_TYPE_ORIGINAL); }
   void addSubdividedQuad(Vertex *a, Vertex *b, Vertex *c, Vertex *d, Material *material) {
     addFace(a,b,c,d,material,FACE_TYPE_SUBDIVIDED); }
+
+
 
   // ===============
   // OTHER ACCESSORS
