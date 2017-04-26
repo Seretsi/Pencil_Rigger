@@ -13,6 +13,30 @@ void JointTree::clearJoints() {
 	//use omp to enter jointtree and delete tree from root
 }
 
+void JointTree::DeselectAll() {
+	for (int i = 0; i < joints.size(); i++) {
+		joints[i].deselect();
+	}
+}
+
+int JointTree::Select(glm::vec3 pos) {
+	DeselectAll();
+	int closest = -1;
+	float shortest = -1;
+	for (int j = 0; j < joints.size(); j++) {
+		//make sure there are no selected joints already if we're picking one
+		glm::vec3 cnd = joints[j].getPos();
+		float distance = sqrt(pow((cnd.x-pos.x), 2) + pow((cnd.y-pos.y), 2) + pow((cnd.z-pos.z), 2));
+		if (closest == -1 || (distance < shortest)) {
+			closest = j;
+			shortest = distance;
+		}
+	}
+	joints[closest].select();
+	assert(joints[closest].isSelected());
+	return closest;
+}
+
 int JointTree::getClosest(int i) {
 	int closest = -1;
 	float shortest = -1;

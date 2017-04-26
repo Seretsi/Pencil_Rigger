@@ -416,6 +416,7 @@ void GLCanvas::mousemotionCB(GLFWwindow *window, double x, double y) {
 			std::cout << "sketching\n";
 		}
 	  }
+    
   }
   mouseX = x;
   mouseY = y;
@@ -517,6 +518,9 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
       radiosity->Iterate();
       radiosity->setupVBOs();
       break;
+    case '.':
+      Select(mouseX, args->height-mouseY);
+      break;
     case 'a': case 'A':
       // animate radiosity solution
       args->radiosity_animation = !args->radiosity_animation;
@@ -607,6 +611,20 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
 }
 
 
+void GLCanvas::Select(double i, double j) {
+  int max_d = std::max(args->width,args->height);
+  //glm::vec3 color = glm::vec3(0,0,0);
+  // Here's what we do with a single sample per pixel:
+  // construct & trace a ray through the center of the pixle
+  double x = (i-args->width/2.0)/double(max_d)+0.5;
+  double y = (j-args->height/2.0)/double(max_d)+0.5;
+  Ray r = camera->generateRay(x,y); 
+  Hit h;
+  raytracer->CastRay(r,h,false);
+  glm::vec3 rayPos = r.getOrigin() + r.getDirection()*h.getT(0);
+  int a = rigger->getJointTree()->Select(rayPos);
+  std::cout << "selecting " << a << std::endl;
+}
 
 
 // trace a ray through pixel (i,j) of the image an return the color
@@ -636,6 +654,7 @@ glm::vec3 GLCanvas::TraceRay(double i, double j) {
    //now, need to find the closest joint to that point
    if (loc == 0) {}
    else {
+      
       int parloc = rigger->getJointTree()->getClosest(rigger->getJointTree()->size()-1);
       Joint par = rigger->getJointTree()->getJoint(parloc);
       rigger->getJointTree()->parent(loc, parloc);
@@ -651,6 +670,7 @@ glm::vec3 GLCanvas::TraceRay(double i, double j) {
    // //now, need to find the closest joint to that point
    if (loc == 0) {}
    else {
+      
       int parloc = rigger->getJointTree()->getClosest(rigger->getJointTree()->size()-1);
       Joint par = rigger->getJointTree()->getJoint(parloc);
       rigger->getJointTree()->parent(loc, parloc);

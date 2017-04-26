@@ -33,6 +33,8 @@ public:
 	void addChild(int j) { std::cout << "add child" << std::endl;child.push_back(j); }
 	void setPosition(glm::vec3 &position) { pos = position; }
 	void setID(int &num) { id = num; }
+	void select() {selected = true;}
+	void deselect() {selected = false;}
 
 private:
 
@@ -83,6 +85,8 @@ public:
 		iJoint->setParent(parent);
 		jJoint->addChild(child);
 	}
+	int Select(glm::vec3 pos);
+	void DeselectAll();
 
 	//helpers
 	void clearJoints();
