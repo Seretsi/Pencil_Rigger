@@ -398,12 +398,13 @@ void GLCanvas::mousemotionCB(GLFWwindow *window, double x, double y) {
 					Ray r_dr = camera->generateRay(down_rightx, down_righty);
 				
 				Hit hit;
-				float draw_distance = 5;
-				//FIXME: boolean check broken. Needs to also ignore background geometry like the floor and walls
+				float draw_distance = -10;
+				// FIXME: boolean check broken. Needs to also ignore background geometry like the floor and walls
 				in_line_with_geo = raytracer->CastRay(r, hit, false);
 				if (in_line_with_geo) {
 					// add that ray for visualization
 					RayTree::AddMainSegment(r, 0, hit.getT(hit.num_hits() - 1));
+					std::cout << hit.getT(hit.num_hits()-1) << std::endl;
 					rigger->sketch(r.pointAtParameter(draw_distance), r_ul.pointAtParameter(draw_distance),
 							r_ur.pointAtParameter(draw_distance), r_dl.pointAtParameter(draw_distance), r_dr.pointAtParameter(draw_distance));
 				}

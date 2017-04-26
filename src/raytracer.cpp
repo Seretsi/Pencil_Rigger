@@ -27,7 +27,7 @@ bool RayTracer::CastRay(const Ray &ray, Hit &h, bool use_rasterized_patches) con
   if (use_rasterized_patches) {
     for (int i = 0; i < mesh->numRasterizedPrimitiveFaces(); i++) {
       Face *f = mesh->getRasterizedPrimitiveFace(i);
-      if (f->intersect(ray,h,args->intersect_backfacing)) answer = true;
+      if (f->intersect(ray,h,args->intersect_backfacing	)) answer = true;
     }
   } else {
     int num_primitives = mesh->numPrimitives();

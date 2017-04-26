@@ -65,16 +65,17 @@ void RayTree::setupVBOs(float width) {
   assert (2*raytree_edge_indices.size() == raytree_verts.size());
 
   // copy the data to each VBO
-  glBindBuffer(GL_ARRAY_BUFFER,raytree_verts_VBO); 
-  glBufferData(GL_ARRAY_BUFFER,
-	       sizeof(VBOPosNormalColor) * raytree_verts.size(),
-	       &raytree_verts[0],
-	       GL_STATIC_DRAW); 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,raytree_edge_indices_VBO); 
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-	       sizeof(VBOIndexedTri) * raytree_edge_indices.size(),
-	       &raytree_edge_indices[0], GL_STATIC_DRAW);
-
+  if (raytree_verts.size() > 0) {
+	  glBindBuffer(GL_ARRAY_BUFFER, raytree_verts_VBO);
+	  glBufferData(GL_ARRAY_BUFFER,
+		  sizeof(VBOPosNormalColor) * raytree_verts.size(),
+		  &raytree_verts[0],
+		  GL_STATIC_DRAW);
+	  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, raytree_edge_indices_VBO);
+	  glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+		  sizeof(VBOIndexedTri) * raytree_edge_indices.size(),
+		  &raytree_edge_indices[0], GL_STATIC_DRAW);
+  }
   HandleGLError("ray treesetup leaving"); 
 }
 
