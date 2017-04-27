@@ -646,41 +646,36 @@ glm::vec3 GLCanvas::TraceRay(double i, double j) {
   Hit h;
  raytracer->CastRay(r,h,false);
  std::cout << "got past the ray casting bit\n";
+ Joint temp;
  if (h.num_hits() == 0) {
    //future: find closest tri and project it's z-point onto the ray
    //now: ignore it
    std::cout << "no intersections with mesh. ignoring joint placement." << std::endl;
+   return glm::vec3(0,0,0);
  }
  else if (h.num_hits() == 1) {
-  std::cout << "one intersection. woop woop.\n";
-   //add a joint 
-   Joint temp = Joint(rigger->getJointTree()->size(), r.getOrigin()+r.getDirection()*h.getT(0));
-   int  loc = rigger->getJointTree()->addJoint(temp);
-   //now, need to find the closest joint to that point
-   if (loc == 0) {}
-   else {
-      
-      int parloc = rigger->getJointTree()->getClosest(rigger->getJointTree()->size()-1);
-      Joint par = rigger->getJointTree()->getJoint(parloc);
-      rigger->getJointTree()->parent(loc, parloc);
-
-   }
-
+   temp = Joint(rigger->getJointTree()->size(), r.getOrigin()+r.getDirection()*h.getT(0));  
  }
  else {
-   // average the first two times together and add a joint there
-  std::cout << "2+ hits. woop woop woop.\n";
-    Joint temp = Joint(rigger->getJointTree()->size(), r.getOrigin()+r.getDirection()*((h.getT(0)+h.getT(1))/2.0f));
-    int loc = rigger->getJointTree()->addJoint(temp);
-   // //now, need to find the closest joint to that point
-   if (loc == 0) {}
-   else {
-      
-      int parloc = rigger->getJointTree()->getClosest(rigger->getJointTree()->size()-1);
-      Joint par = rigger->getJointTree()->getJoint(parloc);
-      rigger->getJointTree()->parent(loc, parloc);
-   }
-  }
+   temp = Joint(rigger->getJointTree()->size(), r.getOrigin()+r.getDirection()*((h.getT(0)+h.getT(1))/2.0f));
+ }
+ int  loc = rigger->getJointTree()->addJoint(temp);
+ //now, need to find the closest joint to that point
+ if (loc == 0) {}
+ else {
+    int parloc = rigger->getJointTree()->getClosest(rigger->getJointTree()->size()-1);
+    Joint par = rigger->getJointTree()->getJoint(parloc);
+    bool anySelected = false;
+    for (int i = 0; i < rigger->getJointTree()->size(); i++) {
+      Joint j = rigger->getJointTree()->getJoint(i);
+      if (j.isSelected()) {
+        anySelected = true;
+        rigger->getJointTree()->parent(loc, i);
+        break;
+      }
+    }
+    if (!anySelected) rigger->getJointTree()->parent(loc, parloc);
+ }
   // add that ray for visualization
   RayTree::AddMainSegment(r,0,h.getT(h.num_hits()-1));
   

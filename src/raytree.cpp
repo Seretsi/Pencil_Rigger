@@ -77,7 +77,6 @@ void RayTree::setupVBOs(float width) {
 			&raytree_edge_indices[0], GL_STATIC_DRAW);
 	}
 	HandleGLError("ray treesetup leaving");
-	
 }
 
 void RayTree::drawVBOs() {

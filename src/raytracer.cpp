@@ -14,28 +14,29 @@
 // ===========================================================================
 // casts a single ray through the scene geometry and finds the closest hit
 bool RayTracer::CastRay(const Ray &ray, Hit &h, bool use_rasterized_patches) const {
-	bool answer = false;
 
-	// intersect each of the quads
-	for (int i = 0; i < mesh->numOriginalQuads(); i++) {
-		Face *f = mesh->getOriginalQuad(i);
-		if (f->intersect(ray, h, args->intersect_backfacing)) answer = true;
+  bool answer = false;
 
-		// intersect each of the primitives (either the patches, or the original primitives)
-		if (use_rasterized_patches) {
-			for (int i = 0; i < mesh->numRasterizedPrimitiveFaces(); i++) {
-				Face *f = mesh->getRasterizedPrimitiveFace(i);
-				if (f->intersect(ray, h, args->intersect_backfacing)) answer = true;
-			}
-		}
-		else {
-			int num_primitives = mesh->numPrimitives();
-			for (int i = 0; i < num_primitives; i++) {
-				if (mesh->getPrimitive(i)->intersect(ray, h)) answer = true;
-			}
-		}
-		return answer;
-	}
+  // intersect each of the quads
+  for (int i = 0; i < mesh->numOriginalQuads(); i++) {
+    Face *f = mesh->getOriginalQuad(i);
+    if (f->intersect(ray,h,args->intersect_backfacing)) answer = true;
+
+  }
+
+  // intersect each of the primitives (either the patches, or the original primitives)
+  if (use_rasterized_patches) {
+    for (int i = 0; i < mesh->numRasterizedPrimitiveFaces(); i++) {
+      Face *f = mesh->getRasterizedPrimitiveFace(i);
+      if (f->intersect(ray,h,args->intersect_backfacing	)) answer = true;
+    }
+  } else {
+    int num_primitives = mesh->numPrimitives();
+    for (int i = 0; i < num_primitives; i++) {
+      if (mesh->getPrimitive(i)->intersect(ray,h)) answer = true;
+    }
+  }
+  return answer;
 }
 
 // ===========================================================================

@@ -30,9 +30,9 @@ public:
 	
 	//Modifiers
 	void setParent(int j) { parent = j; }
-	void addChild(int j) { std::cout << "add child" << std::endl;child.push_back(j); }
+	void addChild(int j) { child.push_back(j); }
 	void setPosition(glm::vec3 &position) { pos = position; }
-	void setID(int &num) { id = num; }
+	void setID(int num) { id = num; }
 	void select() {selected = true;}
 	void deselect() {selected = false;}
 
@@ -60,10 +60,11 @@ public:
 		joints = std::vector<Joint>(_size);
 		root = _root;
 	}
-	Joint& getJoint(int id){ return joints[id]; }
+	Joint getJoint(int id){ return joints[id]; }
 	
 	int addJoint(Joint &j) {
 		joints.push_back(j);
+		j.setID(joints.size()-1);
 		if (joints.size() == 1) {
 			root = 0;
 		}
