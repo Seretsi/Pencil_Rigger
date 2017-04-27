@@ -157,8 +157,8 @@ void GLCanvas::initialize(ArgParser *_args) {
 
 void GLCanvas::Load(){
   mesh = new Mesh();
-  //mesh->Load(args);
-  mesh->Parallel(args);
+  mesh->Load(args);
+  //mesh->Parallel(args);
 
   raytracer = new RayTracer(mesh,args);
   radiosity = new Radiosity(mesh,args);
