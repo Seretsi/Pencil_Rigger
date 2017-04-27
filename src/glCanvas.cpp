@@ -390,7 +390,7 @@ void GLCanvas::mousemotionCB(GLFWwindow *window, double x, double y) {
 					double down_rightx = (i+1 - args->width / 2.0) / double(max_d) + 0.5;
 					double down_righty = (j-1 - args->height / 2.0) / double(max_d) + 0.5;
 					//debugging prints
-					printf("%f, %f | %f, %f | %f ,%f | %f, %f\n", up_leftx, up_lefty, up_rightx, up_righty, down_leftx, down_lefty, down_rightx, down_righty);
+					//printf("%f, %f | %f, %f | %f ,%f | %f, %f\n", up_leftx, up_lefty, up_rightx, up_righty, down_leftx, down_lefty, down_rightx, down_righty);
 				Ray r = camera->generateRay(x, y);
 					Ray r_ul = camera->generateRay(up_leftx, up_lefty); //ray upper left (ul)
 					Ray r_ur = camera->generateRay(up_rightx, up_righty);
@@ -400,12 +400,15 @@ void GLCanvas::mousemotionCB(GLFWwindow *window, double x, double y) {
 				Hit hit;
 				float draw_distance = 5;
 				//FIXME: boolean check broken. Needs to also ignore background geometry like the floor and walls
-				in_line_with_geo = raytracer->CastRay(r, hit, false);
+				in_line_with_geo = raytracer->CastRay(r, hit, true);
+				//std::cout << in_line_with_geo << std::endl;
 				if (in_line_with_geo) {
 					// add that ray for visualization
 					RayTree::AddMainSegment(r, 0, hit.getT(hit.num_hits() - 1));
-					rigger->sketch(r.pointAtParameter(draw_distance), r_ul.pointAtParameter(draw_distance),
-							r_ur.pointAtParameter(draw_distance), r_dl.pointAtParameter(draw_distance), r_dr.pointAtParameter(draw_distance));
+					//rigger->sketch(r.pointAtParameter(draw_distance), r_ul.pointAtParameter(draw_distance),
+							//r_ur.pointAtParameter(draw_distance), r_dl.pointAtParameter(draw_distance), r_dr.pointAtParameter(draw_distance));
+					//std::cout << GetPos(x, y).x << "|" << GetPos(x, y).y << "|" << GetPos(x, y).z << std::endl;
+					rigger->sketch(GetPos(x, y), GetPos(up_leftx, up_lefty), GetPos(up_rightx, up_righty), GetPos(down_leftx, down_lefty), GetPos(down_rightx, down_righty));
 				}
 
 			RayTree::Deactivate();
@@ -413,6 +416,7 @@ void GLCanvas::mousemotionCB(GLFWwindow *window, double x, double y) {
 			glm::vec3 poi = camera->point_of_interest;
 			float distance = glm::length((cp - poi) / 2.0f);
 			RayTree::setupVBOs(distance / 500.0);
+			rigger->setupsketch();
 			std::cout << "sketching\n";
 		}
 	  }
