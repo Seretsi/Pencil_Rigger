@@ -20,8 +20,8 @@ bool RayTracer::CastRay(const Ray &ray, Hit &h, bool use_rasterized_patches) con
   for (int i = 0; i < mesh->numOriginalQuads(); i++) {
     Face *f = mesh->getOriginalQuad(i);
     if (f->intersect(ray,h,args->intersect_backfacing)) answer = true;
-
   }
+  
 
   // intersect each of the primitives (either the patches, or the original primitives)
   if (use_rasterized_patches) {

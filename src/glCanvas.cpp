@@ -157,8 +157,8 @@ void GLCanvas::initialize(ArgParser *_args) {
 
 void GLCanvas::Load(){
   mesh = new Mesh();
-  mesh->Load(args);
-  //mesh->Parallel(args);
+  //mesh->Load(args);
+  mesh->Parallel(args);
 
   raytracer = new RayTracer(mesh,args);
   radiosity = new Radiosity(mesh,args);
@@ -604,6 +604,9 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
 
        
       break;
+    case ',':
+      rigger->getJointTree()->DeselectAll();
+      break;
     default:
       std::cout << "UNKNOWN KEYBOARD INPUT  '" << (char)key << "'" << std::endl;
     }
@@ -667,12 +670,17 @@ glm::vec3 GLCanvas::TraceRay(double i, double j) {
       if (j.isSelected()) {
         anySelected = true;
         rigger->getJointTree()->parent(loc, i);
+        
+        
         break;
       }
     }
     if (!anySelected) rigger->getJointTree()->parent(loc, parloc);
  }
   // add that ray for visualization
+  rigger->getJointTree()->DeselectAll();
+  rigger->getJointTree()->select(rigger->getJointTree()->size()-1);
+  
   RayTree::AddMainSegment(r,0,h.getT(h.num_hits()-1));
   
   // return the color
