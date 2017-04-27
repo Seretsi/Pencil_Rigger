@@ -20,8 +20,8 @@ public:
 
   // CONSTRUCTOR & DESTRUCTOR
   Hit() { 
-    t0 = -10000;
-    t1 = -10000;
+    t0 = 10000;
+    t1 = 10000;
     material = NULL;
     normal = glm::vec3(0,0,0); 
     texture_s = 0;
@@ -43,17 +43,17 @@ public:
   glm::vec3 getNormal() const { return normal; }
   float get_s() const { return texture_s; }
   float get_t() const { return texture_t; }
-  int num_hits() const { if (t0 != -10000 && t1 != -10000) return 2;
-                         else if (t1 != -10000 || t0 != -10000) return 1;
+  int num_hits() const { if (t0 != 10000 && t1 != 10000) return 2;
+                         else if (t1 != 10000 || t0 != 10000) return 1;
                          else return 0;}
   void push_t(float t) {
-    if (t0 == -10000) t0 = t; 
+    if (t0 == 10000) t0 = t; 
     else t1 = t;
   }
   // MODIFIER
   void set(float _t, Material *m, glm::vec3 n) {
-    if (t0 == -10000) t0 = _t; 
-    else if (t1 == -10000) t1 = _t;
+    if (t0 == 10000) t0 = _t; 
+    else if (t1 == 10000) t1 = _t;
     else t1 = _t;
      material = m; normal = n; 
     texture_s = 0; texture_t = 0; }

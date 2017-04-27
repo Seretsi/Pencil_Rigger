@@ -4,9 +4,37 @@
 #include "joint.h"
 #include <algorithm>
 #include <fstream>
+#include <string>
+#include <iostream>
+#include <stdio.h>
+#include <queue>
 
 void JointTree::clearJoints() {
 	//use omp to enter jointtree and delete tree from root
+}
+
+void JointTree::DeselectAll() {
+	for (int i = 0; i < joints.size(); i++) {
+		joints[i].deselect();
+	}
+}
+
+int JointTree::Select(glm::vec3 pos) {
+	DeselectAll();
+	int closest = -1;
+	float shortest = -1;
+	for (int j = 0; j < joints.size(); j++) {
+		//make sure there are no selected joints already if we're picking one
+		glm::vec3 cnd = joints[j].getPos();
+		float distance = sqrt(pow((cnd.x-pos.x), 2) + pow((cnd.y-pos.y), 2) + pow((cnd.z-pos.z), 2));
+		if (closest == -1 || (distance < shortest)) {
+			closest = j;
+			shortest = distance;
+		}
+	}
+	joints[closest].select();
+	assert(joints[closest].isSelected());
+	return closest;
 }
 
 int JointTree::getClosest(int i) {
@@ -33,64 +61,61 @@ int JointTree::getClosest(int i) {
 	//return NULL;
 }
 
-bool JointTree::Parallel_load(std::string filename, ArgParser* args) {
-	std::ifstream rigfile(args->path+'/'+filename);
+bool JointTree::Save(std::string fname) {
+	std::ofstream of(fname);
+	if (!of.good()) {
+		std::cerr << "issue opening ouput file";
+		return false;
+	}
+	of << joints.size() << std::endl;
+	for (int i = 0; i < joints.size(); i++) {
+		glm::vec3 tpos = joints[i].getPos();
+		of << tpos.x << " " << tpos.y << " " << tpos.z << " " << i << std::endl;
+	}
+	of << "\n";
+	std::queue<int> bfs;
+	bfs.push(root);
+	while (!bfs.empty()) {
+		int current = bfs.front();
+		bfs.pop();
+		of << current << " ";
+		Joint* working_joint = &joints[current];
+		std::cout << "number of children: " << working_joint->numChildren() << std::endl;
+		for (int i = 0; i < working_joint->numChildren(); i++) {
+			bfs.push(working_joint->getChild(i));
+			of << working_joint->getChild(i) << " ";
+		}
+		of << "\n";
+	}
+	return true;
+}
+
+bool JointTree::Parallel_load(std::string filename) {
+	std::ifstream rigfile(filename);
 	if (!rigfile.good()) {
 		std::cerr << "ERROR: could not open rigging file" << std::endl;
 		return false;
 	}
-	std::string token;
-	getline(rigfile, token);
-	int num_joints = atoi(token.c_str());
-	this->joints = std::vector<Joint>(num_joints);
-	std::cout << "# joints: " << num_joints << std::endl;
-	int num_threads = 16;
-	int num_lines_per_thread = std::max(num_joints/num_threads, 1);
-	int last_thread_extra = num_joints%num_threads;
-#pragma omp parallel for
-	for (int i = 0; i < num_threads; i++) {
-		int startline = 1 + omp_get_thread_num()*num_lines_per_thread;
-		std::ifstream threadstream(args->path+'/'+filename);
-		if (!rigfile.good()) {
-			exit(0);
-		}
-		std::string threadtoken;
-		int x = num_lines_per_thread;
-		if (omp_get_thread_num() == num_threads -1) {
-			x += last_thread_extra;
-		}
-		int s = 0;
-		while (s < startline) {
-			std::getline(threadstream, threadtoken);
-			s++;
-		}
-		for (s = 0; s < x; s++) {
-			std::getline(threadstream, threadtoken);
-			std::stringstream ss(threadtoken);
-			float x, y, z;
-			int ind;
-			ss >> x >> y >> z >> ind;
-			glm::vec3 temp = glm::vec3(x,y,z);
-			this->joints[ind] = Joint(ind, temp);
-		}
-		threadstream.close();
-	}
-	for (int i = 0; i < joints.size(); i++) {
-		std::cout << joints[i].getID() << std::endl;
-	}
+	int num_joints;
+	rigfile >> num_joints;
+	joints = std::vector<Joint>(num_joints);
 	for (int i = 0; i < num_joints; i++) {
-		getline(rigfile, token);
+		float x,y,z;
+		int index;
+		rigfile >> x >> y >> z >> index;
+		Joint temp(index, glm::vec3(x,y,z));	
+		joints[index] = temp;
+
 	}
-	getline(rigfile, token); // should just be whitespace
+	std::string token;
 	while (getline(rigfile, token)) {
 		std::stringstream ss(token);
-		std::string t;
-		int parent;
-		ss >> t;
-		parent = atoi(t.c_str());
-		while (ss >> t) {
-			joints[parent].addChild(atoi(t.c_str()));
+		int root;
+		int child;
+		ss >> root;
+		while (ss >> child) {
+			parent(child, root);
 		}
 	}
-	return true;
+	
 }

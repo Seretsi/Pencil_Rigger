@@ -30,9 +30,11 @@ public:
 	
 	//Modifiers
 	void setParent(int j) { parent = j; }
-	void addChild(int j) { child.push_back(j); }
+	void addChild(int j) { std::cout << "add child" << std::endl;child.push_back(j); }
 	void setPosition(glm::vec3 &position) { pos = position; }
 	void setID(int &num) { id = num; }
+	void select() {selected = true;}
+	void deselect() {selected = false;}
 
 private:
 
@@ -63,7 +65,7 @@ public:
 	int addJoint(Joint &j) {
 		joints.push_back(j);
 		if (joints.size() == 1) {
-			root = 1;
+			root = 0;
 		}
 		return joints.size()-1;
 	}
@@ -76,17 +78,20 @@ public:
 	int getClosest(int i);
 
 	//parent joint i to joint j
-	void parent(int i, int j) {
-		Joint *iJoint = &joints[i];
-		Joint *jJoint = &joints[j];
+	void parent(int child, int parent) {
+		Joint *iJoint = &joints[child];
+		Joint *jJoint = &joints[parent];
 
-		iJoint->setParent(j);
-		jJoint->addChild(i);
+		iJoint->setParent(parent);
+		jJoint->addChild(child);
 	}
+	int Select(glm::vec3 pos);
+	void DeselectAll();
 
 	//helpers
 	void clearJoints();
-	bool Parallel_load(std::string filename, ArgParser *args);
+	bool Parallel_load(std::string filename);
+	bool Save(std::string fname);
 
 private:
 	std::vector<Joint> joints;

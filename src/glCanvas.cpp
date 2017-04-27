@@ -158,7 +158,8 @@ void GLCanvas::initialize(ArgParser *_args) {
 void GLCanvas::Load(){
   mesh = new Mesh();
   mesh->Load(args);
- 
+  //mesh->Parallel(args);
+
   raytracer = new RayTracer(mesh,args);
   radiosity = new Radiosity(mesh,args);
   photon_mapping = new PhotonMapping(mesh,args);
@@ -420,6 +421,7 @@ void GLCanvas::mousemotionCB(GLFWwindow *window, double x, double y) {
 			std::cout << "sketching\n";
 		}
 	  }
+    
   }
   mouseX = x;
   mouseY = y;
@@ -497,7 +499,7 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
     }
     case 't':  case 'T': {
       // visualize the ray tree for the pixel at the current mouse position
-      
+      TraceRay(mouseX, args->height-mouseY);
       radiosity->setupVBOs();
       photon_mapping->setupVBOs();
       break; }
@@ -520,6 +522,9 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
       // a single step of radiosity
       radiosity->Iterate();
       radiosity->setupVBOs();
+      break;
+    case '.':
+      Select(mouseX, args->height-mouseY);
       break;
     case 'a': case 'A':
       // animate radiosity solution
@@ -586,7 +591,14 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
       break;
 
     case 'j': case 'J':
-    
+    if (rigger->getJointTree()->size()) {
+      rigger->getJointTree()->Save("../models/test.rig");
+      std::cout << "saved rig\n";
+    }
+    else {
+      rigger->getJointTree()->Parallel_load("../models/test.rig");
+    }
+      
       //cast a ray, intersect it with the whole mesh.
         
       // Here's what we do with a single sample per pixel:
@@ -604,6 +616,20 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
 }
 
 
+void GLCanvas::Select(double i, double j) {
+  int max_d = std::max(args->width,args->height);
+  //glm::vec3 color = glm::vec3(0,0,0);
+  // Here's what we do with a single sample per pixel:
+  // construct & trace a ray through the center of the pixle
+  double x = (i-args->width/2.0)/double(max_d)+0.5;
+  double y = (j-args->height/2.0)/double(max_d)+0.5;
+  Ray r = camera->generateRay(x,y); 
+  Hit h;
+  raytracer->CastRay(r,h,false);
+  glm::vec3 rayPos = r.getOrigin() + r.getDirection()*h.getT(0);
+  int a = rigger->getJointTree()->Select(rayPos);
+  std::cout << "selecting " << a << std::endl;
+}
 
 
 // trace a ray through pixel (i,j) of the image an return the color
@@ -626,30 +652,35 @@ glm::vec3 GLCanvas::TraceRay(double i, double j) {
    std::cout << "no intersections with mesh. ignoring joint placement." << std::endl;
  }
  else if (h.num_hits() == 1) {
+  std::cout << "one intersection. woop woop.\n";
    //add a joint 
    Joint temp = Joint(rigger->getJointTree()->size(), r.getOrigin()+r.getDirection()*h.getT(0));
    int  loc = rigger->getJointTree()->addJoint(temp);
    //now, need to find the closest joint to that point
-   if (loc == 1) {}
+   if (loc == 0) {}
    else {
+      
       int parloc = rigger->getJointTree()->getClosest(rigger->getJointTree()->size()-1);
       Joint par = rigger->getJointTree()->getJoint(parloc);
       rigger->getJointTree()->parent(loc, parloc);
+
    }
 
  }
  else {
    // average the first two times together and add a joint there
-   Joint temp = Joint(rigger->getJointTree()->size(), r.getOrigin()+r.getDirection()*((h.getT(0)+h.getT(1))/2.0f));
-   int loc = rigger->getJointTree()->addJoint(temp);
-   //now, need to find the closest joint to that point
-   if (loc == 1) {}
+  std::cout << "2+ hits. woop woop woop.\n";
+    Joint temp = Joint(rigger->getJointTree()->size(), r.getOrigin()+r.getDirection()*((h.getT(0)+h.getT(1))/2.0f));
+    int loc = rigger->getJointTree()->addJoint(temp);
+   // //now, need to find the closest joint to that point
+   if (loc == 0) {}
    else {
+      
       int parloc = rigger->getJointTree()->getClosest(rigger->getJointTree()->size()-1);
       Joint par = rigger->getJointTree()->getJoint(parloc);
       rigger->getJointTree()->parent(loc, parloc);
    }
-}
+  }
   // add that ray for visualization
   RayTree::AddMainSegment(r,0,h.getT(h.num_hits()-1));
   
