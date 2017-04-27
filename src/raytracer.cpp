@@ -14,6 +14,7 @@
 // ===========================================================================
 // casts a single ray through the scene geometry and finds the closest hit
 bool RayTracer::CastRay(const Ray &ray, Hit &h, bool use_rasterized_patches) const {
+
   bool answer = false;
 
   // intersect each of the quads

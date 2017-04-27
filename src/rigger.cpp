@@ -163,14 +163,17 @@ void Rigger::setupBones() {
 }
 
 void Rigger::setupsketch() {
+	std::cout << "setting up sketch\n" << sketch_strokes.size() << std::endl;
 	//normals
 	glm::vec3 normal;
 	if (sketch_strokes_coords.size() > 0) {
-		normal = computeNormal(sketch_strokes[0], sketch_strokes[1], sketch_strokes[2]);
+		normal = computeNormal(sketch_strokes[0], sketch_strokes[2], sketch_strokes[1]);
 	}
 
 	//color based on selection
-	glm::vec4 color = glm::vec4(0.0, 0.0, 1.0, 0.5);
+	glm::vec4 color = glm::vec4(0.0, 0.0, 1.0, 1.0);
+	sketch_pixel.empty();
+	sketch_pixel_indices.empty();
 
 //#pragma omp parallel for
 	for (int s = 0; s < sketch_strokes_coords.size(); s++) {
@@ -181,10 +184,10 @@ void Rigger::setupsketch() {
 		sketch_pixel.push_back(VBOPosNormalColor(sketch_strokes[start+1], normal, color));
 		sketch_pixel.push_back(VBOPosNormalColor(sketch_strokes[start+2], normal, color));
 		sketch_pixel.push_back(VBOPosNormalColor(sketch_strokes[start+3], normal, color));
-		sketch_pixel_indices.push_back(VBOIndexedTri(start, start + 1, start + 2));
-		sketch_pixel_indices.push_back(VBOIndexedTri(start + 2, start + 1, start + 3));
+		sketch_pixel_indices.push_back(VBOIndexedTri(start, start + 2, start + 1));
+		sketch_pixel_indices.push_back(VBOIndexedTri(start + 2, start + 3, start + 1));
 	}
-	
+
 	if (sketch_pixel.size() > 0) {
 		glBindBuffer(GL_ARRAY_BUFFER, sketch_pixels_VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(VBOPosNormalColor)*sketch_pixel.size(), &sketch_pixel[0], GL_STATIC_DRAW);
@@ -192,7 +195,7 @@ void Rigger::setupsketch() {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sketch_pixels_indices_VBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
 			sizeof(VBOIndexedTri) * sketch_pixel_indices.size(),
-			&joints_pixel_indices[0], GL_STATIC_DRAW);
+			&sketch_pixel_indices[0], GL_STATIC_DRAW);
 	}
 }
 
@@ -284,13 +287,14 @@ void Rigger::cleanupVBOs() {
 
 //add one "pixel" of line stroke using square vertex coordinates
 void Rigger::sketch(glm::vec3 center, glm::vec3 upRight, glm::vec3 upLeft, glm::vec3 lowRight, glm::vec3 lowLeft){
+	//printf("%f | %f | %f\n", upRight.x, upRight.y, upRight.z);
 	sketch_strokes_coords.push_back(center);
 	sketch_strokes.push_back(upLeft);
 	sketch_strokes.push_back(upRight);
 	sketch_strokes.push_back(lowLeft);
 	sketch_strokes.push_back(lowRight);
 
-}
+}	
 
 
 
