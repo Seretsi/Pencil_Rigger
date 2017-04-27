@@ -22,61 +22,61 @@ void RayTree::initializeVBOs() {
 }
 
 void RayTree::setupVBOs(float width) {
-  HandleGLError("enter ray treesetup"); 
-  raytree_verts.clear();
-  raytree_edge_indices.clear();
+	HandleGLError("enter ray treesetup");
+	raytree_verts.clear();
+	raytree_edge_indices.clear();
 
-  glm::vec4 main_color(0.7,0.7,0.7,0.7);
-  glm::vec4 shadow_color(0.1,0.9,0.1,0.7);
-  glm::vec4 reflected_color(0.9,0.1,0.1,0.7);
-  glm::vec4 transmitted_color(0.1,0.1,0.9,0.7);
+	glm::vec4 main_color(0.7, 0.7, 0.7, 0.7);
+	glm::vec4 shadow_color(0.1, 0.9, 0.1, 0.7);
+	glm::vec4 reflected_color(0.9, 0.1, 0.1, 0.7);
+	glm::vec4 transmitted_color(0.1, 0.1, 0.9, 0.7);
 
-  // initialize the data
-  unsigned int i;
-  for (i = 0; i < main_segments.size(); i++) {
-    addEdgeGeometry(raytree_verts,raytree_edge_indices,
-                    main_segments[i].getStart(),
-                    main_segments[i].getEnd(),
-                    main_color,main_color,
-                    width,width);
-  }
-  for (i = 0; i < shadow_segments.size(); i++) {
-    addEdgeGeometry(raytree_verts,raytree_edge_indices,
-                    shadow_segments[i].getStart(),
-                    shadow_segments[i].getEnd(),
-                    shadow_color,shadow_color,
-                    width,width);
-  }
-  for (i = 0; i < reflected_segments.size(); i++) {
-    addEdgeGeometry(raytree_verts,raytree_edge_indices,
-                    reflected_segments[i].getStart(),
-                    reflected_segments[i].getEnd(),
-                    reflected_color,reflected_color,
-                    width,width);
-  }
-  for (i = 0; i < transmitted_segments.size(); i++) {
-    addEdgeGeometry(raytree_verts,raytree_edge_indices,
-                    transmitted_segments[i].getStart(),
-                    transmitted_segments[i].getEnd(),
-                    transmitted_color,transmitted_color,
-                    width,width);
-  }
+	// initialize the data
+	unsigned int i;
+	for (i = 0; i < main_segments.size(); i++) {
+		addEdgeGeometry(raytree_verts, raytree_edge_indices,
+			main_segments[i].getStart(),
+			main_segments[i].getEnd(),
+			main_color, main_color,
+			width, width);
+	}
+	for (i = 0; i < shadow_segments.size(); i++) {
+		addEdgeGeometry(raytree_verts, raytree_edge_indices,
+			shadow_segments[i].getStart(),
+			shadow_segments[i].getEnd(),
+			shadow_color, shadow_color,
+			width, width);
+	}
+	for (i = 0; i < reflected_segments.size(); i++) {
+		addEdgeGeometry(raytree_verts, raytree_edge_indices,
+			reflected_segments[i].getStart(),
+			reflected_segments[i].getEnd(),
+			reflected_color, reflected_color,
+			width, width);
+	}
+	for (i = 0; i < transmitted_segments.size(); i++) {
+		addEdgeGeometry(raytree_verts, raytree_edge_indices,
+			transmitted_segments[i].getStart(),
+			transmitted_segments[i].getEnd(),
+			transmitted_color, transmitted_color,
+			width, width);
+	}
 
-  assert (2*raytree_edge_indices.size() == raytree_verts.size());
+	assert(2 * raytree_edge_indices.size() == raytree_verts.size());
 
-  // copy the data to each VBO
-  if (raytree_verts.size() > 0) {
-	  glBindBuffer(GL_ARRAY_BUFFER, raytree_verts_VBO);
-	  glBufferData(GL_ARRAY_BUFFER,
-		  sizeof(VBOPosNormalColor) * raytree_verts.size(),
-		  &raytree_verts[0],
-		  GL_STATIC_DRAW);
-	  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, raytree_edge_indices_VBO);
-	  glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-		  sizeof(VBOIndexedTri) * raytree_edge_indices.size(),
-		  &raytree_edge_indices[0], GL_STATIC_DRAW);
-  }
-  HandleGLError("ray treesetup leaving"); 
+	// copy the data to each VBO
+	if (raytree_verts.size() > 0) {
+		glBindBuffer(GL_ARRAY_BUFFER, raytree_verts_VBO);
+		glBufferData(GL_ARRAY_BUFFER,
+			sizeof(VBOPosNormalColor) * raytree_verts.size(),
+			&raytree_verts[0],
+			GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, raytree_edge_indices_VBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+			sizeof(VBOIndexedTri) * raytree_edge_indices.size(),
+			&raytree_edge_indices[0], GL_STATIC_DRAW);
+	}
+	HandleGLError("ray treesetup leaving");
 }
 
 void RayTree::drawVBOs() {
