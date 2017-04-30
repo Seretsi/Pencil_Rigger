@@ -157,9 +157,9 @@ void GLCanvas::initialize(ArgParser *_args) {
 
 void GLCanvas::Load(){
   mesh = new Mesh();
-  mesh->Load(args);
-  //mesh->Parallel(args);
-
+  //mesh->Load(args);
+  mesh->Parallel(args);
+  //exit(1);
   raytracer = new RayTracer(mesh,args);
   radiosity = new Radiosity(mesh,args);
   photon_mapping = new PhotonMapping(mesh,args);
@@ -608,6 +608,9 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
 
        
       break;
+    case ',':
+      rigger->getJointTree()->DeselectAll();
+      break;
     default:
       std::cout << "UNKNOWN KEYBOARD INPUT  '" << (char)key << "'" << std::endl;
     }
@@ -628,7 +631,7 @@ void GLCanvas::Select(double i, double j) {
   raytracer->CastRay(r,h,false);
   glm::vec3 rayPos = r.getOrigin() + r.getDirection()*h.getT(0);
   int a = rigger->getJointTree()->Select(rayPos);
-  std::cout << "selecting " << a << std::endl;
+  //std::cout << "selecting " << a << std::endl;
 }
 
 
@@ -645,7 +648,7 @@ glm::vec3 GLCanvas::TraceRay(double i, double j) {
   Ray r = camera->generateRay(x,y); 
   Hit h;
  raytracer->CastRay(r,h,false);
- std::cout << "got past the ray casting bit\n";
+ //std::cout << "got past the ray casting bit\n";
  Joint temp;
  if (h.num_hits() == 0) {
    //future: find closest tri and project it's z-point onto the ray
@@ -671,12 +674,17 @@ glm::vec3 GLCanvas::TraceRay(double i, double j) {
       if (j.isSelected()) {
         anySelected = true;
         rigger->getJointTree()->parent(loc, i);
+        
+        
         break;
       }
     }
     if (!anySelected) rigger->getJointTree()->parent(loc, parloc);
  }
   // add that ray for visualization
+  rigger->getJointTree()->DeselectAll();
+  rigger->getJointTree()->select(rigger->getJointTree()->size()-1);
+  
   RayTree::AddMainSegment(r,0,h.getT(h.num_hits()-1));
   
   // return the color

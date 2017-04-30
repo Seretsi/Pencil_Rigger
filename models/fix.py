@@ -1,4 +1,8 @@
+def removeComments(filename):
 
+def removeVN(filename):
+
+def removeVT(filename):
 
 def fix_OBJ(filename):
 	objfile = open(filename).readlines()
@@ -10,6 +14,8 @@ def fix_OBJ(filename):
 			lines_to_delete.append(line)
 			continue
 		words = objfile[line].split()
+		if (len(words) == 0):
+			continue
 		if (words[0] == 'v'):
 			continue
 		elif (words[0] == 'vt' or words[0] == 'vn'):

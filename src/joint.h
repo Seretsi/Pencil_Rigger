@@ -76,6 +76,7 @@ public:
 	int size() const {
 		return joints.size();
 	}
+	void select(int i) {joints[i].select();}
 	int getClosest(int i);
 
 	//parent joint i to joint j
