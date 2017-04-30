@@ -33,7 +33,7 @@ void Rigger::setupJoints() {
 	float offset = 0.05f; //controls the size of rendered joint nodes
 	glm::vec4 selected_color = glm::vec4(1.0, 1.0, 0.0, 1.0);
 	glm::vec4 unselected_color = glm::vec4(1.0, 0.0, 0.0, 1.0);
-
+	std::cout << "setting up\n";
 //#pragma omp parallel for
 	//run through "tree" and get positions to make cubes to represent joints3
 	for (int j = 0; j < jt->size(); ++j) {
@@ -295,11 +295,6 @@ void Rigger::sketch(glm::vec3 center, glm::vec3 upRight, glm::vec3 upLeft, glm::
 	sketch_strokes.push_back(lowRight);
 
 }	
-
-
-
-
-
 
 
 

@@ -618,7 +618,7 @@ void GLCanvas::keyboardCB(GLFWwindow* window, int key, int scancode, int action,
   }
 }
 
-
+ 
 void GLCanvas::Select(double i, double j) {
   int max_d = std::max(args->width,args->height);
   //glm::vec3 color = glm::vec3(0,0,0);
