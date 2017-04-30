@@ -80,7 +80,7 @@ bool JointTree::Save(std::string fname) {
 		bfs.pop();
 		of << current << " ";
 		Joint* working_joint = &joints[current];
-		std::cout << "number of children: " << working_joint->numChildren() << std::endl;
+		//std::cout << "number of children: " << working_joint->numChildren() << std::endl;
 		for (int i = 0; i < working_joint->numChildren(); i++) {
 			bfs.push(working_joint->getChild(i));
 			of << working_joint->getChild(i) << " ";
