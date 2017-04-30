@@ -1,4 +1,8 @@
+def removeComments(filename):
 
+def removeVN(filename):
+
+def removeVT(filename):
 
 def fix_OBJ(filename):
 	objfile = open(filename).readlines()

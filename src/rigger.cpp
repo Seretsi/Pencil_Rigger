@@ -163,7 +163,7 @@ void Rigger::setupBones() {
 }
 
 void Rigger::setupsketch() {
-	std::cout << "setting up sketch\n" << sketch_strokes.size() << std::endl;
+	//std::cout << "setting up sketch\n" << sketch_strokes.size() << std::endl;
 	//normals
 	glm::vec3 normal;
 	if (sketch_strokes_coords.size() > 0) {

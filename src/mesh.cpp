@@ -9,7 +9,7 @@
 #include <ios>
 #include <omp.h>
 #include <sstream>
-
+#include <time.h>
 
 #include "argparser.h"
 #include "vertex.h"
@@ -186,22 +186,26 @@ void Mesh::setParentsChild(Vertex *p1, Vertex *p2, Vertex *child) {
 // ===============================================================================
 
 void Mesh::Parallel(ArgParser *_args) {
+  time_t start, end;
+  time(&start);
   //set up filename, open up original ifstream for counting number of points
   args = _args;
   std::string file = args->path+'/'+args->input_file;
   std::ifstream objfile(file.c_str());
   if (!objfile.good()) {
-    return;
+    exit(1);
   }
   int num_verts = -1;
   std::string token;
+  
   do {
     getline(objfile, token);
     num_verts++;
   }
   while ((token != "")&&(token != "\n"));
+  //sets the size of the vertex vector to be the number of vertex lines being read in
   setVertSize(num_verts);
-
+  //std::cerr << "hi ";
   //now, set it back to the beginning. You still need to write the code for this one to parse the extra lines in front.
 
   objfile.close();
@@ -212,32 +216,26 @@ void Mesh::Parallel(ArgParser *_args) {
   int extra_lines = num_verts%nt;
   int lpt = num_verts/nt;
   std::cout << "number of verts: " << num_verts << "\n";
-  std::cout << "lines per thread: " << lpt << "\n";
-  std::cout << "extra lines at beginning: " << extra_lines << "\n";
-  std::cout << "opening extra file pointers...\n";
+  // std::cout << "lines per thread: " << lpt << "\n";
+  // std::cout << "extra lines at beginning: " << extra_lines << "\n";
+  // std::cout << "opening extra file pointers...\n";
   //each thread has its own ifstream
   std::ifstream fp[nt];
   for (int i = 0; i < nt; i++) {
     //open new ifstream and seek it to the start of the points it will read
     fp[i].open(file, std::ifstream::in);
+    std::string myfile = "../models/test" + std::to_string(i) + ".txt";
     int temp_ct = 0;
     std::string tok;
-    while (temp_ct < extra_lines+i*lpt) {
+    int num = i*lpt;
+    if (i < extra_lines) num += i;
+    else num += extra_lines;
+    while (temp_ct < num) {
       //just skip the line and inc
       getline(fp[i],tok);
       temp_ct++;
     }
-    std::cout << "thread " << i << " will start at line " << temp_ct << "\n";
-  }
-
-  // deal with the leftover lines in front
-  for (int i = 0; i < extra_lines; i++) {
-    getline(objfile, token);
-    std::stringstream ss(token);
-    std::string ignore;
-    double x, y, z;
-    ss >> ignore >> x >> y >> z;
-    addVertex(glm::vec3(x,y,z), i);
+    //std::cout << "thread " << i << " will start at line " << temp_ct << "\n";
   }
 #pragma omp parallel for num_threads(nt)
   for (int i = 0; i < num_verts; i++) {
@@ -255,19 +253,27 @@ void Mesh::Parallel(ArgParser *_args) {
 
     #pragma omp critical
     {
-    addVertex(pt, extra_lines+i);
+      addVertex(pt, i);
 
     }
   }
+
   std::cout << "finished reading verts\n";
+  //
   // there should be a line of space between these
   // advance the objfile to count the number of face lines
-  // do {
-  //   getline(objfile, token);
-  // }
-  // while ((token != "")&&(token != "\n"));
+  do {
+    getline(objfile, token);
+    //std::cout << token << std::endl;
+  }
+  while ((token != "")&&(token != "\n"));
     Material* active_material = new Material("",glm::vec3(0.5,0.5,0.5), glm::vec3(1,1,1), glm::vec3(0,0,0), 0.3);
 
+  // for (int i = 0; i < vertices.size(); i++) {
+  //   glm::vec3 p = vertices[i]->get();
+  //   std::cerr << i;
+  //   std::cerr << ": " << p.x << ", " << p.y << ", " << p.z << std::endl;
+  // }
   int face_start = objfile.tellg();
   while (objfile >> token) {
     if (token == "f") {
@@ -277,13 +283,14 @@ void Mesh::Parallel(ArgParser *_args) {
       b--;
       c--;
       d--;
-      std::cout << a << b << c << d << std::endl;
+      //std::cout << a << " " << b << " " << c << " " << d << std::endl;
       assert (a >= 0 && a < numVertices());
       assert (b >= 0 && b < numVertices());
       assert (c >= 0 && c < numVertices());
       assert (d >= 0 && d < numVertices());
       assert (active_material != NULL);
       addOriginalQuad(getVertex(a),getVertex(b),getVertex(c),getVertex(d),active_material);
+
     }
     else if (token == "PerspectiveCamera") {
       camera = new PerspectiveCamera();
@@ -296,6 +303,8 @@ void Mesh::Parallel(ArgParser *_args) {
       continue;
     }
   }
+  time(&end);
+  std::cout << "time elapsed: " << end - start << std::endl; 
   /*
   //now find number of faces
   num_verts = 0;
