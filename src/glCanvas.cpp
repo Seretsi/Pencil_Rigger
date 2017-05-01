@@ -265,11 +265,7 @@ void GLCanvas::drawVBOs(const glm::mat4 &ProjectionMatrix,const glm::mat4 &ViewM
   radiosity->drawVBOs();
   photon_mapping->drawVBOs();
   RayTree::drawVBOs();
-  //rigger->drawVBOs();
-  rigger->drawVBOs_joints();
-  rigger->drawVBOs_bones();
-  rigger->drawVBOs_sketch();
-
+  
   if (args->intersect_backfacing) {
     glDisable(GL_CULL_FACE);
   }
@@ -277,6 +273,12 @@ void GLCanvas::drawVBOs(const glm::mat4 &ProjectionMatrix,const glm::mat4 &ViewM
   if (args->intersect_backfacing) {
     glEnable(GL_CULL_FACE);
   }
+
+  //rigger->drawVBOs();
+  glClear(GL_DEPTH_BUFFER_BIT);
+  rigger->drawVBOs_joints();
+  rigger->drawVBOs_bones();
+  rigger->drawVBOs_sketch();
   HandleGLError("leaving GlCanvas::drawVBOs()");
 }
 

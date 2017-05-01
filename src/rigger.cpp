@@ -61,7 +61,17 @@ void Rigger::setupJoints() {
 
 		//color based on selection
 		glm::vec4 color;
-		joint_node.isSelected() ? color = unselected_color : color = selected_color;
+		//std::cout << "selected?" << joint_node.isSelected() << std::endl;
+
+		if (joint_node.isSelected()) {
+			std::cout << "not selected\n";
+			color = unselected_color;
+		} 
+		else {
+			std::cout << "selected\n";
+			color = selected_color;
+		}
+		//joint_node.isSelected() ? color = unselected_color : color = selected_color;
 
 		//FF - Front Face
 		int start;
